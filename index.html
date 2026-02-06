@@ -3,83 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Helmy Card V2 - المنصة الذكية</title>
+    <title>Helmy Card V2 - Premium Edition</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
     <style>
-        :root { --gold: #ff9800; --bg: #121212; --card: #1e1e1e; --text: #ffffff; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
-        .container { max-width: 500px; margin: auto; }
-        .card { background: var(--card); border-radius: 15px; padding: 20px; margin-bottom: 20px; border: 1px solid #333; }
-        input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; box-sizing: border-box; font-size: 15px; }
-        input { background: #222; color: white; border: 1px solid #444; }
-        .btn-main { background: var(--gold); color: black; font-weight: bold; cursor: pointer; }
-        .btn-sub { background: #333; color: white; cursor: pointer; font-size: 13px; }
+        :root { --red: #ff0000; --dark-red: #8b0000; --bg: #000000; --card: #0a0a0a; --gold: #ff9800; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: white; margin: 0; padding: 15px; }
+        .container { max-width: 600px; margin: auto; }
+        
+        /* الاستايل الفخم */
+        .card { background: var(--card); border-radius: 15px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--dark-red); box-shadow: 0 0 15px rgba(255, 0, 0, 0.2); }
+        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #333; background: #111; color: white; font-size: 15px; }
+        input:focus { border-color: var(--red); outline: none; box-shadow: 0 0 5px var(--red); }
+        
+        .btn-main { background: linear-gradient(45deg, var(--dark-red), var(--red)); color: white; font-weight: bold; cursor: pointer; border: none; padding: 12px; border-radius: 8px; width: 100%; margin-top: 10px; }
+        .btn-main:hover { opacity: 0.9; transform: scale(0.98); }
+        .btn-sub { background: #222; color: #ccc; cursor: pointer; border: none; padding: 8px; border-radius: 5px; font-size: 12px; margin-top: 5px; }
+        
         .hidden { display: none; }
-        .stats { display: flex; justify-content: space-between; text-align: center; }
-        .tree-item { background: #252525; padding: 10px; margin: 5px 0; border-radius: 8px; border-right: 5px solid var(--gold); }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
-        th, td { border: 1px solid #444; padding: 8px; text-align: center; }
-        .status-badge { padding: 4px 8px; border-radius: 5px; font-size: 11px; }
-        .pending { background: #856404; color: #fff; }
-        .success { background: #155724; color: #fff; }
+        .stats { display: flex; justify-content: space-between; text-align: center; margin: 15px 0; }
+        .stats h3 { color: var(--gold); margin: 5px 0; }
+        
+        .tree-item { background: #111; padding: 10px; margin: 5px 0; border-radius: 8px; border-right: 4px solid var(--red); font-size: 13px; }
+        
+        /* لوحة التحكم الجداول */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 11px; }
+        th, td { border: 1px solid #222; padding: 10px; text-align: center; }
+        th { background: var(--dark-red); color: white; }
+        
+        .floating-btn { position: fixed; bottom: 20px; left: 20px; background: var(--red); color: white; padding: 12px 20px; border-radius: 50px; font-weight: bold; cursor: pointer; border: none; z-index: 1000; box-shadow: 0 0 10px var(--red); }
+        
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; display: inline-block; }
+        .pending { background: #555; }
+        .success { background: green; }
+        
+        .admin-actions button { margin: 2px; padding: 5px; font-size: 10px; cursor: pointer; border-radius: 3px; border: none; }
+        .del-btn { background: #ff4444; color: white; }
+        .edit-btn { background: #ff9800; color: black; }
     </style>
 </head>
 <body>
 
+<button class="floating-btn" onclick="toggleModal(true)">📜 القواعد</button>
+
+<div id="termsModal" class="hidden" style="position:fixed; z-index:2001; background:rgba(0,0,0,0.9); width:100%; height:100%; top:0; left:0; display: flex; align-items: center; justify-content: center;">
+    <div class="card" style="max-width: 80%;">
+        <h2 style="color:var(--red); text-align:center">🏆 شروط المسابقة</h2>
+        <p>1. شحن 1000ج كحد أدنى.<br>2. بونص 5% عند الشحن.<br>3. بونص 10% من شحن فريقك.<br>4. تفعيل حلمي يدوي.</p>
+        <button class="btn-main" onclick="toggleModal(false)">فهمت</button>
+    </div>
+</div>
+
 <div class="container">
-    <h1 style="text-align: center; color: var(--gold);">🚀 Helmy Card V2</h1>
+    <h1 style="text-align: center; color: var(--red); text-shadow: 0 0 10px var(--red);">🦅 HELMY CARD V2</h1>
 
     <div id="auth-section" class="card">
         <div style="display:flex; gap:10px; margin-bottom:15px">
-            <button id="loginTab" class="btn-main" onclick="switchTab('login')">تسجيل دخول</button>
-            <button id="registerTab" class="btn-sub" onclick="switchTab('register')">حساب جديد</button>
+            <button id="tabL" class="btn-main" onclick="switchTab('login')">دخول</button>
+            <button id="tabR" class="btn-sub" onclick="switchTab('register')">تسجيل</button>
         </div>
-        <input type="email" id="email" placeholder="الإيميل">
-        <input type="password" id="password" placeholder="الباسورد">
-        
-        <div id="register-only" class="hidden">
-            <input type="text" id="fullName" placeholder="اسمك بالكامل">
-            <input type="text" id="customMyCode" placeholder="كود الدعوة الخاص بك (مثلاً: kimo1)">
-            <input type="text" id="wallet" placeholder="رقم الكاش">
-            <input type="text" id="invitedBy" placeholder="كود الشخص الذي دعاك">
+        <input type="email" id="email" placeholder="البريد الإلكتروني">
+        <input type="password" id="password" placeholder="كلمة المرور">
+        <div id="reg-fields" class="hidden">
+            <input type="text" id="fullName" placeholder="الاسم بالكامل">
+            <input type="text" id="customCode" placeholder="كود الدعوة الخاص بك">
+            <input type="text" id="wallet" placeholder="رقم محفظة الكاش">
+            <input type="text" id="invBy" placeholder="كود الداعي (اختياري)">
         </div>
-        <button class="btn-main" id="mainBtn" onclick="handleAuth()">دخول</button>
+        <button class="btn-main" id="mainBtn" onclick="handleAuth()">دخول الأن</button>
     </div>
 
     <div id="user-section" class="hidden">
-        <div class="card">
-            <h3>أهلاً: <span id="userNameShow" style="color:var(--gold)">...</span></h3>
+        <div class="card" style="border-color: var(--gold);">
+            <h3>مرحباً: <span id="uName" style="color:var(--red)">...</span></h3>
             <div class="stats">
-                <div><h3 id="balance">0</h3><p>رصيدك</p></div>
-                <div><h3 id="invitesCount">0</h3><p>فريقك</p></div>
+                <div><h3 id="uBalance">0</h3><p>رصيدك</p></div>
+                <div><h3 id="uTeam">0</h3><p>فريقك</p></div>
             </div>
-            <p style="text-align:center; font-size:12px; border:1px dashed #555; padding:5px">كود دعوتك: <b id="myCodeShow" style="color:var(--gold)"></b></p>
+            <p style="text-align:center; font-size:12px; background:#111; padding:8px; border-radius:5px">كود دعوتك: <b id="uCode" style="color:var(--gold)"></b></p>
         </div>
-        
-        <div class="card" style="border: 2px solid var(--gold);">
-            <h3>💰 طلب شحن رصيد</h3>
-            <input type="number" id="depAmount" placeholder="اكتب المبلغ المشحون">
-            <button class="btn-main" onclick="requestDeposit()">إرسال إشعار لحلمي ✉️</button>
-            <div id="lastRequestStatus" style="text-align:center; margin-top:10px"></div>
+
+        <div class="card" style="border-color: var(--red);">
+            <h3>💰 إشعار شحن جديد</h3>
+            <input type="number" id="depAmt" placeholder="المبلغ المشحون">
+            <button class="btn-main" onclick="sendRequest()">إبلاغ حلمي بالشحن ✉️</button>
+            <div id="reqStatus" style="text-align:center; margin-top:10px"></div>
         </div>
 
         <div class="card">
-            <h3>🌳 فريقك</h3>
-            <div id="tree"></div>
+            <h3>🌳 الشجرة الخاصة بك</h3>
+            <div id="treeList"></div>
         </div>
-        <button class="btn-sub" onclick="logout()">خروج</button>
+        <button class="btn-sub" onclick="logout()">تسجيل خروج</button>
     </div>
 
     <div id="admin-section" class="hidden">
-        <div class="card" style="border: 2px solid #28a745;">
-            <h2 style="color:#28a745; text-align: center;">لوحة إدارة حلمي 👑</h2>
-            <table>
-                <thead>
-                    <tr><th>الوكيل</th><th>المبلغ+5%</th><th>الإجراء</th></tr>
-                </thead>
-                <tbody id="adminList"></tbody>
+        <div class="card" style="border-color: #00ff00;">
+            <h2 style="color:#00ff00; text-align:center">لوحة التحكم العليا 👑</h2>
+            <p style="font-size:12px">طلبات الشحن المعلقة:</p>
+            <table id="reqTable">
+                <thead><tr><th>الوكيل</th><th>المبلغ+5%</th><th>الإجراء</th></tr></thead>
+                <tbody id="adminReqList"></tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2 style="color:var(--gold); text-align:center">إدارة الوكلاء</h2>
+            <table id="usersTable">
+                <thead><tr><th>الاسم</th><th>الرصيد</th><th>الإجراء</th></tr></thead>
+                <tbody id="adminUserList"></tbody>
             </table>
         </div>
         <button class="btn-sub" onclick="logout()">خروج</button>
@@ -100,44 +133,42 @@
     const auth = firebase.auth();
     const ADMIN_EMAIL = "admin@helmy.com";
 
+    function toggleModal(s) { document.getElementById('termsModal').classList.toggle('hidden', !s); }
     function switchTab(m) {
-        const isReg = m === 'register';
-        document.getElementById('register-only').classList.toggle('hidden', !isReg);
-        document.getElementById('mainBtn').innerText = isReg ? 'إنشاء حساب' : 'دخول';
-        document.getElementById('loginTab').style.background = isReg ? '#333' : '#ff9800';
-        document.getElementById('registerTab').style.background = isReg ? '#ff9800' : '#333';
-        window.currentMode = m;
+        const isR = m === 'register';
+        document.getElementById('reg-fields').classList.toggle('hidden', !isR);
+        document.getElementById('mainBtn').innerText = isR ? 'إنشاء حساب جديد' : 'دخول الأن';
+        window.mode = m;
     }
 
     async function handleAuth() {
         const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        if (window.currentMode !== 'register') {
-            auth.signInWithEmailAndPassword(email, password).catch(e => alert("خطأ في البيانات"));
+        const pass = document.getElementById('password').value;
+        if(window.mode !== 'register') {
+            auth.signInWithEmailAndPassword(email, pass).catch(e => alert("خطأ في البيانات"));
         } else {
             const name = document.getElementById('fullName').value;
-            const myCode = document.getElementById('customMyCode').value;
+            const myCode = document.getElementById('customCode').value;
             const wallet = document.getElementById('wallet').value;
-            const invBy = document.getElementById('invitedBy').value;
+            const invBy = document.getElementById('invBy').value;
             try {
-                const res = await auth.createUserWithEmailAndPassword(email, password);
+                const res = await auth.createUserWithEmailAndPassword(email, pass);
                 await db.collection("users").doc(res.user.uid).set({
                     name, myCode, wallet, email, balance: 0, invitedBy: invBy || "direct", uid: res.user.uid
                 });
-            } catch (e) { alert(e.message); }
+            } catch(e) { alert(e.message); }
         }
     }
 
     auth.onAuthStateChanged(user => {
-        if (user) {
+        if(user) {
             document.getElementById('auth-section').classList.add('hidden');
-            if (user.email === ADMIN_EMAIL) {
+            if(user.email === ADMIN_EMAIL) {
                 document.getElementById('admin-section').classList.remove('hidden');
-                loadAdminData();
+                loadAdminAll();
             } else {
                 document.getElementById('user-section').classList.remove('hidden');
                 loadUserData(user);
-                monitorMyRequests(user.uid);
             }
         }
     });
@@ -146,70 +177,82 @@
         db.collection("users").doc(user.uid).onSnapshot(d => {
             const data = d.data();
             if(data) {
-                document.getElementById('userNameShow').innerText = data.name;
-                document.getElementById('balance').innerText = data.balance + " ج";
-                document.getElementById('myCodeShow').innerText = data.myCode;
+                document.getElementById('uName').innerText = data.name;
+                document.getElementById('uBalance').innerText = data.balance + " ج";
+                document.getElementById('uCode').innerText = data.myCode;
                 db.collection("users").where("invitedBy", "==", data.myCode).onSnapshot(team => {
-                    document.getElementById('invitesCount').innerText = team.size;
-                    const tree = document.getElementById('tree');
-                    tree.innerHTML = team.empty ? "لا يوجد فريق" : "";
-                    team.forEach(m => { tree.innerHTML += `<div class="tree-item">👤 ${m.data().name}</div>`; });
+                    document.getElementById('uTeam').innerText = team.size;
+                    const tree = document.getElementById('treeList');
+                    tree.innerHTML = team.empty ? "لا يوجد وكلاء" : "";
+                    team.forEach(m => tree.innerHTML += `<div class="tree-item">👤 ${m.data().name}</div>`);
                 });
             }
         });
-    }
-
-    async function requestDeposit() {
-        const amount = Number(document.getElementById('depAmount').value);
-        if(amount < 1000) return alert("أقل شحن 1000ج");
-        const userDoc = await db.collection("users").doc(auth.currentUser.uid).get();
-        await db.collection("requests").add({
-            uid: auth.currentUser.uid,
-            name: userDoc.data().name,
-            amount: amount,
-            status: "معلق",
-            createdAt: new Date()
-        });
-        alert("تم إرسال الإشعار لحلمي بنجاح!");
-    }
-
-    function monitorMyRequests(uid) {
-        db.collection("requests").where("uid", "==", uid).orderBy("createdAt", "desc").limit(1).onSnapshot(s => {
-            const statusDiv = document.getElementById('lastRequestStatus');
+        db.collection("requests").where("uid", "==", user.uid).orderBy("createdAt", "desc").limit(1).onSnapshot(s => {
+            const stat = document.getElementById('reqStatus');
             if(!s.empty) {
-                const req = s.docs[0].data();
-                if(req.status === "تم") {
-                    statusDiv.innerHTML = `<span class="status-badge success">✅ تم تأكيد شحنتك الأخيرة بنجاح!</span>`;
-                } else {
-                    statusDiv.innerHTML = `<span class="status-badge pending">⏳ شحنتك قيد المراجعة من حلمي...</span>`;
-                }
+                const r = s.docs[0].data();
+                stat.innerHTML = r.status === "تم" ? `<span class="status-badge success">تم التأكيد ✅</span>` : `<span class="status-badge pending">بانتظار حلمي.. ⏳</span>`;
             }
         });
     }
 
-    function loadAdminData() {
+    async function sendRequest() {
+        const amt = Number(document.getElementById('depAmt').value);
+        if(amt < 1000) return alert("أقل شحن 1000ج");
+        const userD = await db.collection("users").doc(auth.currentUser.uid).get();
+        await db.collection("requests").add({ uid: auth.currentUser.uid, name: userD.data().name, amount: amt, status: "معلق", createdAt: new Date() });
+        alert("تم إرسال الإشعار!");
+    }
+
+    // وظائف حلمي (الأدمن)
+    function loadAdminAll() {
+        // جلب طلبات الشحن
         db.collection("requests").where("status", "==", "معلق").onSnapshot(s => {
-            const list = document.getElementById('adminList');
+            const list = document.getElementById('adminReqList');
             list.innerHTML = "";
             s.forEach(doc => {
                 const d = doc.data();
                 const total = d.amount + (d.amount * 0.05);
-                list.innerHTML += `<tr>
-                    <td>${d.name}</td>
-                    <td>${total}ج</td>
-                    <td><button class="btn-main" onclick="approve('${doc.id}', '${d.uid}', ${total})">تأكيد</button></td>
-                </tr>`;
+                list.innerHTML += `<tr><td>${d.name}</td><td>${total}ج</td><td><button class="btn-main" style="padding:5px" onclick="approveReq('${doc.id}', '${d.uid}', ${total})">تأكيد</button></td></tr>`;
+            });
+        });
+
+        // جلب كل الوكلاء للإدارة
+        db.collection("users").onSnapshot(s => {
+            const list = document.getElementById('adminUserList');
+            list.innerHTML = "";
+            s.forEach(doc => {
+                const u = doc.data();
+                if(u.email !== ADMIN_EMAIL) {
+                    list.innerHTML += `<tr>
+                        <td>${u.name}</td>
+                        <td>${u.balance}ج</td>
+                        <td class="admin-actions">
+                            <button class="edit-btn" onclick="editBalance('${doc.id}', ${u.balance})">تعديل</button>
+                            <button class="del-btn" onclick="deleteUser('${doc.id}')">حذف</button>
+                        </td>
+                    </tr>`;
+                }
             });
         });
     }
 
-    async function approve(id, uid, total) {
+    async function approveReq(id, uid, total) {
         await db.collection("users").doc(uid).update({ balance: firebase.firestore.FieldValue.increment(total) });
         await db.collection("requests").doc(id).update({ status: "تم" });
+    }
+
+    async function editBalance(id, current) {
+        const newVal = prompt("ادخل الرصيد الجديد:", current);
+        if(newVal !== null) await db.collection("users").doc(id).update({ balance: Number(newVal) });
+    }
+
+    async function deleteUser(id) {
+        if(confirm("هل أنت متأكد من حذف هذا الوكيل نهائياً؟")) await db.collection("users").doc(id).delete();
     }
 
     function logout() { auth.signOut(); location.reload(); }
 </script>
 </body>
 </html>
-
