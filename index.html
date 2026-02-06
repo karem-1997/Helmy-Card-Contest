@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Helmy Card - Total Solution V7</title>
+    <title>Helmy Card - Final Edition V8</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
@@ -24,8 +24,6 @@
         .id-badge { font-family: monospace; background: #222; color: var(--gold); padding: 3px 6px; border-radius: 4px; font-size: 10px; }
         .hidden { display: none !important; }
         .active-row:hover { background: rgba(255, 152, 0, 0.1); cursor: pointer; }
-        
-        /* Modal */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 5000; display: flex; align-items: center; justify-content: center; }
         .modal-content { background: #050505; border: 2px solid var(--red); width: 90%; max-width: 500px; padding: 20px; border-radius: 20px; max-height: 80vh; overflow-y: auto; }
     </style>
@@ -36,12 +34,18 @@
 
 <div id="pModal" class="modal hidden">
     <div class="modal-content">
-        <h2 style="color:var(--red); text-align:center;">🚀 شروط مسابقة Helmy Card</h2>
-        <div style="font-size: 13px; line-height: 1.8; color: #ddd; text-align: right;" dir="rtl">
-            <b>🎁 الوكيل الجديد:</b> بونص 5% على أول شحنة (1000ج+).<br>
-            <b>🎁 الوكيل الداعي:</b> بونص 5% من شحن فريقه (لو فريقه < 10) أو 10% (لو فريقه ≥ 10).<br>
-            <b>💰 العمولات:</b> 1% إلى 2% عمولة دائمة على شحن الفريق.<br>
-            <p style="color:red; font-weight:bold; border: 1px solid red; padding: 8px; text-align: center; margin-top:10px;">🚫 التلاعب أو تعدد الحسابات = حظر نهائي.</p>
+        <h2 style="color:var(--red); text-align:center;">🚀 مسابقة الدعوة – Helmy Card</h2>
+        <div style="font-size: 14px; line-height: 1.8; color: #ddd; text-align: right;" dir="rtl">
+            <p style="color:var(--gold); font-weight:bold; text-align:center;">"ادعي صديقك واكسب إنت وهو 👑"</p>
+            <b>🎁 مكافآت الوكيل المدعو (الجديد):</b><br>
+            - بونص فوري 5% على أول عملية شحن (بحد أدنى 1000 جنيه).<br><br>
+            <b>🎁 مكافآت الوكيل الداعي:</b><br>
+            - بونص أسبوعي 5% من شحن فريقه (إذا كان الفريق أقل من 10 وكلاء).<br>
+            - بونص أسبوعي 10% من شحن فريقه (إذا وصل الفريق لـ 10 وكلاء شاحنين أو أكثر).<br><br>
+            <b>💰 العمولات المستمرة:</b><br>
+            - عمولة ثابتة 1% إلى 2% على كل عملية شحن لفريقك مدى الحياة.<br>
+            - اعتماد كوكيل رسمي وتوثيق الحساب للنشطين.<br><br>
+            <p style="color:red; font-weight:bold; border: 1px solid red; padding: 8px; text-align: center;">🚫 تنبيه: تعدد الحسابات أو التلاعب يؤدي لحظر الحساب والفريق نهائياً.</p>
         </div>
         <button class="btn-main" style="margin-top:15px;" onclick="toggleP(false)">إغلاق</button>
     </div>
@@ -133,6 +137,7 @@
 </div>
 
 <script>
+    // Firebase Config
     const firebaseConfig = {
         apiKey: "AIzaSyBAIB47-TaUEZDZHlXgAsI4RUckzn8C3Io",
         authDomain: "helmy-card-contest.firebaseapp.com",
