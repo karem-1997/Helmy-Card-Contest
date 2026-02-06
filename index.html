@@ -3,13 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Helmy Card - V13 Master</title>
+    <title>Helmy Card - Beta Version</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
     <style>
         :root { --red: #ff0000; --gold: #ff9800; --green: #00ff00; --bg: #000; --card: #0a0a0a; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; padding: 10px; text-align: right; }
+        
+        /* شريط النسخة التجريبية */
+        .beta-banner { background: var(--gold); color: black; text-align: center; padding: 5px; font-weight: bold; font-size: 14px; position: sticky; top: 0; z-index: 9999; border-bottom: 2px solid black; }
+
         .container { max-width: 900px; margin: auto; }
         .card { background: var(--card); border: 1px solid #222; border-radius: 15px; padding: 15px; margin-bottom: 15px; border-right: 5px solid var(--red); box-shadow: 0 4px 15px rgba(255,0,0,0.2); }
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
@@ -29,6 +33,8 @@
     </style>
 </head>
 <body>
+
+<div class="beta-banner">⚠️ هذه نسخة تجريبية فقط (Beta) ولا يعتمد عليها في العمليات الرسمية.</div>
 
 <button style="position:fixed; bottom:20px; left:20px; z-index:4000; background:var(--red); color:white; border:none; padding:15px; border-radius:50px; font-weight:bold; cursor:pointer;" onclick="toggleP(true)">📜 شروط المسابقة</button>
 
@@ -119,21 +125,22 @@
                 <tbody id="adm-users-list"></tbody>
             </table>
         </div>
-        <div id="agent-profile" class="card hidden" style="border-right-color: var(--gold); border-left: 1px solid var(--gold);">
+        <div id="agent-profile" class="card hidden">
             <h3 id="prof-name" style="color:var(--gold)"></h3>
-            <div id="prof-stats" style="background:#111; padding:10px; border-radius:8px; margin-bottom:15px; border:1px solid #333;"></div>
+            <div id="prof-stats" style="background:#111; padding:10px; border-radius:8px; margin-bottom:15px;"></div>
             <h4>🌳 أعضاء الفريق وأرباح الوكيل منهم:</h4>
             <table>
                 <thead><tr><th>اسم العضو</th><th>كود العضو</th><th>شحن العضو</th><th>أرباح الوكيل منه</th></tr></thead>
                 <tbody id="prof-team-list"></tbody>
             </table>
-            <button class="btn-sub" style="margin-top:15px; border-color:var(--gold);" onclick="closeProfile()">إغلاق الملف</button>
+            <button class="btn-sub" onclick="closeProfile()">إغلاق الملف</button>
         </div>
         <button class="btn-sub" onclick="logout()">خروج</button>
     </div>
 </div>
 
 <script>
+    // تهيئة Firebase كما كانت تماماً
     const firebaseConfig = {
         apiKey: "AIzaSyBAIB47-TaUEZDZHlXgAsI4RUckzn8C3Io",
         authDomain: "helmy-card-contest.firebaseapp.com",
@@ -151,8 +158,7 @@
     function toggleP(s) { document.getElementById('pModal').classList.toggle('hidden', !s); }
 
     async function handleAuth() {
-        const e = document.getElementById('email').value;
-        const p = document.getElementById('pass').value;
+        const e = document.getElementById('email').value, p = document.getElementById('pass').value;
         const isReg = !document.getElementById('reg-fields').classList.contains('hidden');
         if(!isReg) { auth.signInWithEmailAndPassword(e, p).catch(() => alert("خطأ في البيانات")); }
         else {
@@ -178,7 +184,6 @@
         db.collection("users").doc(uid).onSnapshot(d => {
             const u = d.data(); if(!u) return;
             document.getElementById('disp-name').innerText = u.name;
-            document.getElementById('disp-id').innerText = "#" + u.uid.substring(0,6);
             document.getElementById('bal-base').innerText = u.balance;
             document.getElementById('bal-bonus').innerText = u.bonusBalance;
             document.getElementById('disp-code').innerText = u.myCode;
@@ -211,7 +216,7 @@
         if(u.userType !== 'جديد' || u.hasRequested) return;
         await db.collection("requests").add({ uid: u.uid, name: u.name, amount: amt, bonus: (amt * 0.05), status: 'pending', invBy: u.invitedBy });
         await db.collection("users").doc(u.uid).update({ hasRequested: true });
-        alert("تم إرسال طلبك!");
+        alert("تم الإرسال!");
     }
 
     function initAdmin() {
@@ -226,7 +231,7 @@
             const list = document.getElementById('adm-users-list'); list.innerHTML = "";
             s.forEach(doc => {
                 const u = doc.data(); if(u.email !== ADMIN) {
-                    list.innerHTML += `<tr class="active-row" style="cursor:pointer" onclick="showProfile('${u.uid}')"><td>${u.name}</td><td>${u.myCode}</td><td>${u.balance}</td><td>${u.bonusBalance}ج</td><td><button onclick="event.stopPropagation(); delUser('${doc.id}')" style="background:red; color:white; border:none; padding:2px 8px; border-radius:4px;">X</button></td></tr>`;
+                    list.innerHTML += `<tr class="active-row" style="cursor:pointer" onclick="showProfile('${u.uid}')"><td>${u.name}</td><td>${u.myCode}</td><td>${u.balance}</td><td>${u.bonusBalance}ج</td><td><button onclick="event.stopPropagation(); delUser('${doc.id}')">X</button></td></tr>`;
                 }
             });
         });
@@ -236,11 +241,7 @@
         await db.collection("users").doc(uid).update({ balance: firebase.firestore.FieldValue.increment(amt), bonusBalance: firebase.firestore.FieldValue.increment(bonus) });
         if(invBy && invBy !== "direct") {
             const invRef = await db.collection("users").where("myCode", "==", invBy).get();
-            if(!invRef.empty) {
-                await db.collection("users").doc(invRef.docs[0].id).update({ 
-                    bonusBalance: firebase.firestore.FieldValue.increment(amt * 0.05) 
-                });
-            }
+            if(!invRef.empty) { await db.collection("users").doc(invRef.docs[0].id).update({ bonusBalance: firebase.firestore.FieldValue.increment(amt * 0.05) }); }
         }
         await db.collection("requests").doc(rid).update({ status: 'done' });
     }
@@ -249,20 +250,15 @@
         const u = (await db.collection("users").doc(uid).get()).data();
         document.getElementById('agent-profile').classList.remove('hidden');
         document.getElementById('prof-name').innerText = "📂 ملف الوكيل: " + u.name;
-        document.getElementById('prof-stats').innerHTML = `
-            <b>النوع:</b> ${u.userType} | <b>الكود:</b> ${u.myCode}<br>
-            <b>الرصيد المشحون:</b> ${u.balance} ج | <b style="color:var(--gold)">إجمالي البونص: ${u.bonusBalance} ج</b>
-        `;
+        document.getElementById('prof-stats').innerHTML = `نوع: ${u.userType} | بونص: ${u.bonusBalance}ج | رصيد: ${u.balance}ج`;
         const list = document.getElementById('prof-team-list'); list.innerHTML = "";
         const team = await db.collection("users").where("invitedBy", "==", u.myCode).get();
-        if(team.empty) { list.innerHTML = "<tr><td colspan='4'>لا يوجد فريق مسجل</td></tr>"; }
         team.forEach(async mDoc => {
             const m = mDoc.data();
             const rs = await db.collection("requests").where("uid", "==", m.uid).where("status", "==", "done").get();
             let total = 0; rs.forEach(r => total += r.data().amount);
             list.innerHTML += `<tr><td>${m.name}</td><td>${m.myCode}</td><td>${total} ج</td><td>${total * 0.05} ج</td></tr>`;
         });
-        document.getElementById('agent-profile').scrollIntoView({ behavior: 'smooth' });
     }
 
     function filterAgents() {
@@ -271,7 +267,7 @@
         for (let row of rows) row.style.display = row.innerText.toLowerCase().includes(input) ? "" : "none";
     }
     function closeProfile() { document.getElementById('agent-profile').classList.add('hidden'); }
-    async function delUser(id) { if(confirm("هل تريد حذف هذا الوكيل نهائياً؟")) await db.collection("users").doc(id).delete(); }
+    async function delUser(id) { if(confirm("حذف؟")) await db.collection("users").doc(id).delete(); }
     function logout() { auth.signOut(); location.reload(); }
 </script>
 </body>
