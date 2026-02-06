@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Helmy Card - Final Edition V8</title>
+    <title>Helmy Card - Absolute Final V9</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
@@ -63,14 +63,14 @@
         <input type="password" id="pass" placeholder="كلمة المرور">
         <div id="reg-fields" class="hidden">
             <input type="text" id="name" placeholder="الاسم الكامل">
-            <input type="text" id="myCode" placeholder="كود دعوتك (مثلاً: 2020)">
-            <input type="text" id="invBy" placeholder="كود الداعي (اختياري)">
+            <input type="text" id="myCode" placeholder="كود دعوتك الشخصي">
+            <input type="text" id="invBy" placeholder="كود الداعي">
             <select id="uType">
                 <option value="جديد">وكيل جديد 🆕</option>
                 <option value="قديم">وكيل قديم 🔙</option>
             </select>
         </div>
-        <button class="btn-main" style="margin-top:10px" onclick="handleAuth()">ابدأ الآن</button>
+        <button class="btn-main" style="margin-top:10px" onclick="handleAuth()">دخول</button>
     </div>
 
     <div id="user-box" class="hidden">
@@ -89,11 +89,9 @@
             <button class="btn-main" onclick="sendCharge()">إرسال الطلب</button>
         </div>
         <div class="card">
-            <h3>🌳 فريقك وتفاصيل البونص</h3>
+            <h3>🌳 فريقك وأرباح الدعوات</h3>
             <table>
-                <thead>
-                    <tr><th>الاسم</th><th>ID</th><th>الكود</th><th>بونص منه</th></tr>
-                </thead>
+                <thead><tr><th>الاسم</th><th>ID</th><th>الكود</th><th>بونص منه</th></tr></thead>
                 <tbody id="team-rows"></tbody>
             </table>
         </div>
@@ -108,36 +106,29 @@
                 <tbody id="adm-requests"></tbody>
             </table>
         </div>
-
-        <div class="card" style="border-right-color: var(--gold);">
-            <h3>🔍 إدارة وبحث الوكلاء</h3>
-            <input type="text" id="adminSearch" onkeyup="filterAgents()" placeholder="ابحث بالكود أو الاسم...">
-            <div style="overflow-x:auto;">
-                <table>
-                    <thead>
-                        <tr><th>الاسم</th><th>ID</th><th>الكود</th><th>الرصيد</th><th>البونص</th><th>حذف</th></tr>
-                    </thead>
-                    <tbody id="adm-users-list"></tbody>
-                </table>
-            </div>
+        <div class="card">
+            <h3>🔍 بحث وإدارة الوكلاء</h3>
+            <input type="text" id="adminSearch" onkeyup="filterAgents()" placeholder="ابحث بالكود...">
+            <table>
+                <thead><tr><th>الاسم</th><th>ID</th><th>الكود</th><th>الرصيد</th><th>البونص</th><th>حذف</th></tr></thead>
+                <tbody id="adm-users-list"></tbody>
+            </table>
         </div>
-
-        <div id="agent-profile" class="card hidden" style="border-color: var(--gold);">
-            <h3 style="color:var(--gold)">📂 ملف الوكيل: <span id="prof-name"></span></h3>
-            <div id="prof-stats" style="margin-bottom:10px;"></div>
-            <h4>🌳 فريقه وأرباحه منهم:</h4>
-            <table id="prof-team-table">
-                <thead><tr><th>الاسم</th><th>الكود</th><th>شحن العضو</th><th>بونص للوكيل</th></tr></thead>
+        <div id="agent-profile" class="card hidden">
+            <h3 id="prof-name"></h3>
+            <div id="prof-stats"></div>
+            <h4>🌳 فريقه:</h4>
+            <table>
+                <thead><tr><th>الاسم</th><th>شحن العضو</th><th>بونص لك</th></tr></thead>
                 <tbody id="prof-team-list"></tbody>
             </table>
-            <button class="btn-sub" onclick="closeProfile()">إغلاق الملف</button>
+            <button class="btn-sub" onclick="closeProfile()">إغلاق</button>
         </div>
         <button class="btn-sub" onclick="logout()">خروج</button>
     </div>
 </div>
 
 <script>
-    // Firebase Config
     const firebaseConfig = {
         apiKey: "AIzaSyBAIB47-TaUEZDZHlXgAsI4RUckzn8C3Io",
         authDomain: "helmy-card-contest.firebaseapp.com",
@@ -155,55 +146,42 @@
     function setAuth(m) { document.getElementById('reg-fields').classList.toggle('hidden', m === 'login'); }
 
     async function handleAuth() {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('pass').value;
+        const e = document.getElementById('email').value;
+        const p = document.getElementById('pass').value;
         const isReg = !document.getElementById('reg-fields').classList.contains('hidden');
-        if(!isReg) {
-            auth.signInWithEmailAndPassword(email, password).catch(e => alert("خطأ في البيانات"));
-        } else {
-            const name = document.getElementById('name').value;
-            const myCode = document.getElementById('myCode').value;
-            const invBy = document.getElementById('invBy').value;
-            const uType = document.getElementById('uType').value;
-            try {
-                const res = await auth.createUserWithEmailAndPassword(email, password);
-                await db.collection("users").doc(res.user.uid).set({
-                    uid: res.user.uid, name, myCode, invitedBy: invBy || "direct",
-                    balance: 0, bonusBalance: 0, userType: uType, isFirst: true, email
-                });
-            } catch(e) { alert(e.message); }
+        if(!isReg) { auth.signInWithEmailAndPassword(e, p).catch(err => alert("خطأ")); }
+        else {
+            const n = document.getElementById('name').value;
+            const c = document.getElementById('myCode').value;
+            const i = document.getElementById('invBy').value;
+            const t = document.getElementById('uType').value;
+            const res = await auth.createUserWithEmailAndPassword(e, p);
+            await db.collection("users").doc(res.user.uid).set({ uid: res.user.uid, name: n, myCode: c, invitedBy: i || "direct", balance: 0, bonusBalance: 0, userType: t, isFirst: true, email: e });
         }
     }
 
     auth.onAuthStateChanged(user => {
         if(user) {
             document.getElementById('auth-box').classList.add('hidden');
-            if(user.email === ADMIN) {
-                document.getElementById('admin-box').classList.remove('hidden');
-                initAdmin();
-            } else {
-                document.getElementById('user-box').classList.remove('hidden');
-                initUser(user.uid);
-            }
+            if(user.email === ADMIN) { document.getElementById('admin-box').classList.remove('hidden'); initAdmin(); }
+            else { document.getElementById('user-box').classList.remove('hidden'); initUser(user.uid); }
         }
     });
 
     function initUser(uid) {
         db.collection("users").doc(uid).onSnapshot(d => {
-            const u = d.data();
-            if(!u) return;
+            const u = d.data(); if(!u) return;
             document.getElementById('disp-name').innerText = u.name;
             document.getElementById('disp-id').innerText = "#" + u.uid.substring(0,6);
-            document.getElementById('bal-base').innerText = u.balance || 0;
-            document.getElementById('bal-bonus').innerText = u.bonusBalance || 0;
+            document.getElementById('bal-base').innerText = u.balance;
+            document.getElementById('bal-bonus').innerText = u.bonusBalance;
             document.getElementById('disp-code').innerText = u.myCode;
-            
             db.collection("users").where("invitedBy", "==", u.myCode).onSnapshot(s => {
                 document.getElementById('count-team').innerText = s.size;
                 const list = document.getElementById('team-rows'); list.innerHTML = "";
                 s.forEach(mDoc => {
                     const m = mDoc.data();
-                    list.innerHTML += `<tr><td>${m.name}</td><td><span class="id-badge">#${m.uid.substring(0,6)}</span></td><td>${m.myCode}</td><td id="b-${m.uid}">0 ج</td></tr>`;
+                    list.innerHTML += `<tr><td>${m.name}</td><td>#${m.uid.substring(0,6)}</td><td>${m.myCode}</td><td id="b-${m.uid}">0</td></tr>`;
                     db.collection("requests").where("uid", "==", m.uid).where("status", "==", "done").get().then(rs => {
                         let total = 0; rs.forEach(r => total += r.data().amount);
                         document.getElementById(`b-${m.uid}`).innerText = (total * 0.05) + " ج";
@@ -215,11 +193,11 @@
 
     async function sendCharge() {
         const amt = Number(document.getElementById('amt-val').value);
-        if(amt < 1000) return alert("الحد الأدنى 1000ج");
         const u = (await db.collection("users").doc(auth.currentUser.uid).get()).data();
-        let bonus = (u.userType === 'جديد' && u.isFirst) ? (amt * 0.05) : 0;
-        await db.collection("requests").add({ uid: u.uid, name: u.name, amount: amt, bonus: bonus, status: 'pending', at: new Date(), invBy: u.invitedBy });
-        alert("تم إرسال الطلب");
+        // بونص 5% للشحن الشخصي فقط إذا كان جديداً وفي أول مرة
+        let b = (u.userType === 'جديد' && u.isFirst) ? (amt * 0.05) : 0;
+        await db.collection("requests").add({ uid: u.uid, name: u.name, amount: amt, bonus: b, status: 'pending', invBy: u.invitedBy });
+        alert("تم الإرسال");
     }
 
     function initAdmin() {
@@ -227,43 +205,27 @@
             const list = document.getElementById('adm-requests'); list.innerHTML = "";
             s.forEach(doc => {
                 const r = doc.data();
-                list.innerHTML += `<tr><td>${r.name}</td><td>${r.amount}ج</td><td style="color:var(--gold)">+${r.bonus}ج</td><td><button onclick="approve('${doc.id}', '${r.uid}', ${r.amount}, ${r.bonus}, '${r.invBy}')" class="btn-main" style="padding:5px;">تأكيد</button></td></tr>`;
+                list.innerHTML += `<tr><td>${r.name}</td><td>${r.amount}ج</td><td>+${r.bonus}ج</td><td><button onclick="approve('${doc.id}', '${r.uid}', ${r.amount}, ${r.bonus}, '${r.invBy}')">تأكيد</button></td></tr>`;
             });
         });
         db.collection("users").onSnapshot(s => {
             const list = document.getElementById('adm-users-list'); list.innerHTML = "";
             s.forEach(doc => {
-                const u = doc.data();
-                if(u.email !== ADMIN) {
-                    list.innerHTML += `<tr class="active-row" onclick="showProfile('${u.uid}', '${u.name}', '${u.myCode}', ${u.balance}, ${u.bonusBalance})"><td>${u.name}</td><td><span class="id-badge">#${u.uid.substring(0,6)}</span></td><td>${u.myCode}</td><td>${u.balance}ج</td><td>${u.bonusBalance}ج</td><td><button onclick="event.stopPropagation(); delUser('${doc.id}')" style="background:red; color:white; border:none; border-radius:3px;">X</button></td></tr>`;
+                const u = doc.data(); if(u.email !== ADMIN) {
+                    list.innerHTML += `<tr class="active-row" onclick="showProfile('${u.uid}')"><td>${u.name}</td><td>#${u.uid.substring(0,6)}</td><td>${u.myCode}</td><td>${u.balance}</td><td>${u.bonusBalance}</td><td><button onclick="delUser('${doc.id}')">X</button></td></tr>`;
                 }
             });
         });
     }
 
-    async function showProfile(uid, name, code, bal, bonus) {
-        document.getElementById('agent-profile').classList.remove('hidden');
-        document.getElementById('prof-name').innerText = name;
-        document.getElementById('prof-stats').innerHTML = `الرصيد: ${bal}ج | البونص: ${bonus}ج | الكود: ${code}`;
-        const list = document.getElementById('prof-team-list'); list.innerHTML = "";
-        const team = await db.collection("users").where("invitedBy", "==", code).get();
-        if(team.empty) list.innerHTML = "<tr><td colspan='4'>لا يوجد فريق</td></tr>";
-        team.forEach(async mDoc => {
-            const m = mDoc.data();
-            const rs = await db.collection("requests").where("uid", "==", m.uid).where("status", "==", "done").get();
-            let total = 0; rs.forEach(r => total += r.data().amount);
-            list.innerHTML += `<tr><td>${m.name}</td><td>${m.myCode}</td><td>${total}ج</td><td>${total * 0.05}ج</td></tr>`;
-        });
-    }
-
-    function filterAgents() {
-        let input = document.getElementById('adminSearch').value.toLowerCase();
-        let rows = document.getElementById('adm-users-list').getElementsByTagName('tr');
-        for (let row of rows) row.style.display = row.innerText.toLowerCase().includes(input) ? "" : "none";
-    }
-
     async function approve(rid, uid, amt, bonus, invBy) {
-        await db.collection("users").doc(uid).update({ balance: firebase.firestore.FieldValue.increment(amt), bonusBalance: firebase.firestore.FieldValue.increment(bonus), isFirst: false });
+        // تحديث الوكيل: إضافة الرصيد + البونص (لو موجود) + إيقاف ميزة بونص أول شحنة
+        await db.collection("users").doc(uid).update({ 
+            balance: firebase.firestore.FieldValue.increment(amt), 
+            bonusBalance: firebase.firestore.FieldValue.increment(bonus), 
+            isFirst: false 
+        });
+        // بونص الداعي (5% من كل شحنة)
         if(invBy && invBy !== "direct") {
             const invRef = await db.collection("users").where("myCode", "==", invBy).get();
             if(!invRef.empty) await db.collection("users").doc(invRef.docs[0].id).update({ bonusBalance: firebase.firestore.FieldValue.increment(amt * 0.05) });
@@ -271,6 +233,24 @@
         await db.collection("requests").doc(rid).update({ status: 'done' });
     }
 
+    async function showProfile(uid) {
+        const u = (await db.collection("users").doc(uid).get()).data();
+        document.getElementById('agent-profile').classList.remove('hidden');
+        document.getElementById('prof-name').innerText = u.name;
+        const list = document.getElementById('prof-team-list'); list.innerHTML = "";
+        const team = await db.collection("users").where("invitedBy", "==", u.myCode).get();
+        team.forEach(async mDoc => {
+            const m = mDoc.data();
+            const rs = await db.collection("requests").where("uid", "==", m.uid).where("status", "==", "done").get();
+            let total = 0; rs.forEach(r => total += r.data().amount);
+            list.innerHTML += `<tr><td>${m.name}</td><td>${total}ج</td><td>${total * 0.05}ج</td></tr>`;
+        });
+    }
+    function filterAgents() {
+        let input = document.getElementById('adminSearch').value.toLowerCase();
+        let rows = document.getElementById('adm-users-list').getElementsByTagName('tr');
+        for (let row of rows) row.style.display = row.innerText.toLowerCase().includes(input) ? "" : "none";
+    }
     function closeProfile() { document.getElementById('agent-profile').classList.add('hidden'); }
     async function delUser(id) { if(confirm("حذف؟")) await db.collection("users").doc(id).delete(); }
     function logout() { auth.signOut(); location.reload(); }
