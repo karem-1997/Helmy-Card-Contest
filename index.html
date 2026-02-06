@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Helmy Card - V11 Final Lock</title>
+    <title>Helmy Card - V13 Master</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
@@ -52,7 +52,7 @@
 </div>
 
 <div class="container">
-    <h1 style="text-align:center; color:var(--red);">🦅 HELMY CARD OFFICIAL</h1>
+    <h1 style="text-align:center; color:var(--red); text-shadow: 0 0 10px var(--red);">🦅 HELMY CARD OFFICIAL</h1>
 
     <div id="auth-box" class="card">
         <div style="display:flex; gap:10px; margin-bottom:15px">
@@ -66,35 +66,35 @@
             <input type="text" id="myCode" placeholder="كود دعوتك الشخصي">
             <input type="text" id="invBy" placeholder="كود الداعي">
             <select id="uType">
-                <option value="جديد">وكيل جديد 🆕 (له بونص شحن أول)</option>
-                <option value="قديم">وكيل قديم 🔙 (بونص فريق فقط)</option>
+                <option value="جديد">وكيل جديد 🆕</option>
+                <option value="قديم">وكيل قديم 🔙</option>
             </select>
         </div>
-        <button class="btn-main" style="margin-top:10px" onclick="handleAuth()">دخول</button>
+        <button class="btn-main" style="margin-top:10px" onclick="handleAuth()">دخول النظام</button>
     </div>
 
     <div id="user-box" class="hidden">
         <div class="card">
             <h3>الوكيل: <span id="disp-name" style="color:var(--red)"></span> <span id="disp-id" class="id-badge"></span></h3>
             <div class="stat-grid">
-                <div class="stat-box"><h2><span id="bal-base">0</span> ج</h2><small>الرصيد</small></div>
-                <div class="stat-box"><h2><span id="bal-bonus">0</span> ج</h2><small>البونص</small></div>
-                <div class="stat-box"><h2><span id="count-team">0</span></h2><small>فريقك</small></div>
-                <div class="stat-box"><h2><span id="disp-code"></span></h2><small>كودك</small></div>
+                <div class="stat-box"><h2><span id="bal-base">0</span> ج</h2><small>الرصيد المشحون</small></div>
+                <div class="stat-box"><h2><span id="bal-bonus">0</span> ج</h2><small>إجمالي البونص</small></div>
+                <div class="stat-box"><h2><span id="count-team">0</span></h2><small>عدد فريقك</small></div>
+                <div class="stat-box"><h2><span id="disp-code"></span></h2><small>كود دعوتك</small></div>
             </div>
         </div>
 
         <div id="charge-section" class="card hidden">
-            <h3>💰 طلب أول شحنة (متاح للوكلاء الجدد فقط)</h3>
+            <h3>💰 طلب أول شحنة (للوكيل الجديد فقط)</h3>
             <div id="charge-controls">
                 <input type="number" id="amt-val" placeholder="المبلغ (1000ج فأكثر)">
-                <button class="btn-main" onclick="sendCharge()">إرسال الطلب</button>
+                <button class="btn-main" onclick="sendCharge()">إرسال طلب الشحن</button>
             </div>
-            <div id="charge-lock" class="hidden lock-msg">✅ تم إرسال طلب الشحن بنجاح.</div>
+            <div id="charge-lock" class="hidden lock-msg">✅ تم استلام طلبك الأول بنجاح.</div>
         </div>
 
         <div class="card">
-            <h3>🌳 فريقك وأرباحك منهم</h3>
+            <h3>🌳 فريقك وتفاصيل البونص</h3>
             <table>
                 <thead><tr><th>الاسم</th><th>الكود</th><th>بونص منه</th></tr></thead>
                 <tbody id="team-rows"></tbody>
@@ -105,29 +105,29 @@
 
     <div id="admin-box" class="hidden">
         <div class="card" style="border-right-color: var(--green);">
-            <h2 style="color:var(--green)">👑 طلبات الشحن</h2>
+            <h2 style="color:var(--green)">👑 طلبات الشحن الجديدة</h2>
             <table>
                 <thead><tr><th>الوكيل</th><th>المبلغ</th><th>بونص</th><th>تأكيد</th></tr></thead>
                 <tbody id="adm-requests"></tbody>
             </table>
         </div>
         <div class="card">
-            <h3>🔍 إدارة الوكلاء</h3>
+            <h3>🔍 إدارة وبحث الوكلاء</h3>
             <input type="text" id="adminSearch" onkeyup="filterAgents()" placeholder="ابحث بالكود...">
             <table>
-                <thead><tr><th>الاسم</th><th>الكود</th><th>الرصيد</th><th>البونص</th><th>حذف</th></tr></thead>
+                <thead><tr><th>الاسم</th><th>الكود</th><th>الرصيد</th><th>إجمالي البونص</th><th>حذف</th></tr></thead>
                 <tbody id="adm-users-list"></tbody>
             </table>
         </div>
-        <div id="agent-profile" class="card hidden">
-            <h3 id="prof-name"></h3>
-            <div id="prof-stats" style="margin-bottom:10px; font-weight:bold; color:var(--gold);"></div>
-            <h4>🌳 فريقه بالكامل:</h4>
+        <div id="agent-profile" class="card hidden" style="border-right-color: var(--gold); border-left: 1px solid var(--gold);">
+            <h3 id="prof-name" style="color:var(--gold)"></h3>
+            <div id="prof-stats" style="background:#111; padding:10px; border-radius:8px; margin-bottom:15px; border:1px solid #333;"></div>
+            <h4>🌳 أعضاء الفريق وأرباح الوكيل منهم:</h4>
             <table>
-                <thead><tr><th>الاسم</th><th>شحن العضو</th><th>بونص منه</th></tr></thead>
+                <thead><tr><th>اسم العضو</th><th>كود العضو</th><th>شحن العضو</th><th>أرباح الوكيل منه</th></tr></thead>
                 <tbody id="prof-team-list"></tbody>
             </table>
-            <button class="btn-sub" onclick="closeProfile()">إغلاق</button>
+            <button class="btn-sub" style="margin-top:15px; border-color:var(--gold);" onclick="closeProfile()">إغلاق الملف</button>
         </div>
         <button class="btn-sub" onclick="logout()">خروج</button>
     </div>
@@ -147,19 +147,17 @@
     const auth = firebase.auth();
     const ADMIN = "admin@helmy.com";
 
-    function toggleP(s) { document.getElementById('pModal').classList.toggle('hidden', !s); }
     function setAuth(m) { document.getElementById('reg-fields').classList.toggle('hidden', m === 'login'); }
+    function toggleP(s) { document.getElementById('pModal').classList.toggle('hidden', !s); }
 
     async function handleAuth() {
         const e = document.getElementById('email').value;
         const p = document.getElementById('pass').value;
         const isReg = !document.getElementById('reg-fields').classList.contains('hidden');
-        if(!isReg) { auth.signInWithEmailAndPassword(e, p).catch(() => alert("خطأ")); }
+        if(!isReg) { auth.signInWithEmailAndPassword(e, p).catch(() => alert("خطأ في البيانات")); }
         else {
-            const n = document.getElementById('name').value;
-            const c = document.getElementById('myCode').value;
-            const i = document.getElementById('invBy').value;
-            const t = document.getElementById('uType').value;
+            const n = document.getElementById('name').value, c = document.getElementById('myCode').value;
+            const i = document.getElementById('invBy').value, t = document.getElementById('uType').value;
             const res = await auth.createUserWithEmailAndPassword(e, p);
             await db.collection("users").doc(res.user.uid).set({ 
                 uid: res.user.uid, name: n, myCode: c, invitedBy: i || "direct", 
@@ -185,17 +183,11 @@
             document.getElementById('bal-bonus').innerText = u.bonusBalance;
             document.getElementById('disp-code').innerText = u.myCode;
             
-            // التحكم في ظهور خانة الشحن
-            const chargeSection = document.getElementById('charge-section');
+            const cs = document.getElementById('charge-section');
             if(u.userType === 'جديد') {
-                chargeSection.classList.remove('hidden');
-                if(u.hasRequested) {
-                    document.getElementById('charge-controls').classList.add('hidden');
-                    document.getElementById('charge-lock').classList.remove('hidden');
-                }
-            } else {
-                chargeSection.classList.add('hidden');
-            }
+                cs.classList.remove('hidden');
+                if(u.hasRequested) { document.getElementById('charge-controls').classList.add('hidden'); document.getElementById('charge-lock').classList.remove('hidden'); }
+            } else { cs.classList.add('hidden'); }
 
             db.collection("users").where("invitedBy", "==", u.myCode).onSnapshot(s => {
                 document.getElementById('count-team').innerText = s.size;
@@ -217,13 +209,9 @@
         if(amt < 1000) return alert("الحد الأدنى 1000ج");
         const u = (await db.collection("users").doc(auth.currentUser.uid).get()).data();
         if(u.userType !== 'جديد' || u.hasRequested) return;
-
-        await db.collection("requests").add({ 
-            uid: u.uid, name: u.name, amount: amt, bonus: (amt * 0.05), 
-            status: 'pending', invBy: u.invitedBy, type: 'first_charge' 
-        });
+        await db.collection("requests").add({ uid: u.uid, name: u.name, amount: amt, bonus: (amt * 0.05), status: 'pending', invBy: u.invitedBy });
         await db.collection("users").doc(u.uid).update({ hasRequested: true });
-        alert("تم إرسال طلب الشحن الأول!");
+        alert("تم إرسال طلبك!");
     }
 
     function initAdmin() {
@@ -231,31 +219,28 @@
             const list = document.getElementById('adm-requests'); list.innerHTML = "";
             s.forEach(doc => {
                 const r = doc.data();
-                list.innerHTML += `<tr><td>${r.name}</td><td>${r.amount}ج</td><td>+${r.bonus}ج</td><td><button onclick="approve('${doc.id}', '${r.uid}', ${r.amount}, ${r.bonus}, '${r.invBy}')">تأكيد</button></td></tr>`;
+                list.innerHTML += `<tr><td>${r.name}</td><td>${r.amount}ج</td><td>+${r.bonus}ج</td><td><button onclick="approve('${doc.id}', '${r.uid}', ${r.amount}, ${r.bonus}, '${r.invBy}')" class="btn-main" style="padding:5px">تأكيد</button></td></tr>`;
             });
         });
         db.collection("users").onSnapshot(s => {
             const list = document.getElementById('adm-users-list'); list.innerHTML = "";
             s.forEach(doc => {
                 const u = doc.data(); if(u.email !== ADMIN) {
-                    list.innerHTML += `<tr class="active-row" onclick="showProfile('${u.uid}')"><td>${u.name}</td><td>${u.myCode}</td><td>${u.balance}</td><td>${u.bonusBalance}</td><td><button onclick="event.stopPropagation(); delUser('${doc.id}')">X</button></td></tr>`;
+                    list.innerHTML += `<tr class="active-row" style="cursor:pointer" onclick="showProfile('${u.uid}')"><td>${u.name}</td><td>${u.myCode}</td><td>${u.balance}</td><td>${u.bonusBalance}ج</td><td><button onclick="event.stopPropagation(); delUser('${doc.id}')" style="background:red; color:white; border:none; padding:2px 8px; border-radius:4px;">X</button></td></tr>`;
                 }
             });
         });
     }
 
     async function approve(rid, uid, amt, bonus, invBy) {
-        // إضافة الرصيد والبونص للوكيل الجديد
-        await db.collection("users").doc(uid).update({ 
-            balance: firebase.firestore.FieldValue.increment(amt), 
-            bonusBalance: firebase.firestore.FieldValue.increment(bonus) 
-        });
-        // إضافة 5% للداعي
+        await db.collection("users").doc(uid).update({ balance: firebase.firestore.FieldValue.increment(amt), bonusBalance: firebase.firestore.FieldValue.increment(bonus) });
         if(invBy && invBy !== "direct") {
             const invRef = await db.collection("users").where("myCode", "==", invBy).get();
-            if(!invRef.empty) await db.collection("users").doc(invRef.docs[0].id).update({ 
-                bonusBalance: firebase.firestore.FieldValue.increment(amt * 0.05) 
-            });
+            if(!invRef.empty) {
+                await db.collection("users").doc(invRef.docs[0].id).update({ 
+                    bonusBalance: firebase.firestore.FieldValue.increment(amt * 0.05) 
+                });
+            }
         }
         await db.collection("requests").doc(rid).update({ status: 'done' });
     }
@@ -263,17 +248,21 @@
     async function showProfile(uid) {
         const u = (await db.collection("users").doc(uid).get()).data();
         document.getElementById('agent-profile').classList.remove('hidden');
-        document.getElementById('prof-name').innerText = u.name;
-        document.getElementById('prof-stats').innerHTML = `نوع الحساب: ${u.userType} | الكود: ${u.myCode} | الرصيد: ${u.balance}ج`;
+        document.getElementById('prof-name').innerText = "📂 ملف الوكيل: " + u.name;
+        document.getElementById('prof-stats').innerHTML = `
+            <b>النوع:</b> ${u.userType} | <b>الكود:</b> ${u.myCode}<br>
+            <b>الرصيد المشحون:</b> ${u.balance} ج | <b style="color:var(--gold)">إجمالي البونص: ${u.bonusBalance} ج</b>
+        `;
         const list = document.getElementById('prof-team-list'); list.innerHTML = "";
         const team = await db.collection("users").where("invitedBy", "==", u.myCode).get();
-        if(team.empty) list.innerHTML = "<tr><td colspan='3'>لا يوجد فريق</td></tr>";
+        if(team.empty) { list.innerHTML = "<tr><td colspan='4'>لا يوجد فريق مسجل</td></tr>"; }
         team.forEach(async mDoc => {
             const m = mDoc.data();
             const rs = await db.collection("requests").where("uid", "==", m.uid).where("status", "==", "done").get();
             let total = 0; rs.forEach(r => total += r.data().amount);
-            list.innerHTML += `<tr><td>${m.name}</td><td>${total}ج</td><td>${total * 0.05}ج</td></tr>`;
+            list.innerHTML += `<tr><td>${m.name}</td><td>${m.myCode}</td><td>${total} ج</td><td>${total * 0.05} ج</td></tr>`;
         });
+        document.getElementById('agent-profile').scrollIntoView({ behavior: 'smooth' });
     }
 
     function filterAgents() {
@@ -282,7 +271,7 @@
         for (let row of rows) row.style.display = row.innerText.toLowerCase().includes(input) ? "" : "none";
     }
     function closeProfile() { document.getElementById('agent-profile').classList.add('hidden'); }
-    async function delUser(id) { if(confirm("حذف؟")) await db.collection("users").doc(id).delete(); }
+    async function delUser(id) { if(confirm("هل تريد حذف هذا الوكيل نهائياً؟")) await db.collection("users").doc(id).delete(); }
     function logout() { auth.signOut(); location.reload(); }
 </script>
 </body>
