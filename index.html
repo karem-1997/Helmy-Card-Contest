@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Helmy Card V2 - المنصة الذكية</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
+    <style>
+        :root { --gold: #ff9800; --bg: #121212; --card: #1e1e1e; --text: #ffffff; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
+        .container { max-width: 500px; margin: auto; }
+        .card { background: var(--card); border-radius: 15px; padding: 20px; margin-bottom: 20px; border: 1px solid #333; }
+        input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; box-sizing: border-box; font-size: 15px; }
+        input { background: #222; color: white; border: 1px solid #444; }
+        .btn-main { background: var(--gold); color: black; font-weight: bold; cursor: pointer; }
+        .btn-sub { background: #333; color: white; cursor: pointer; font-size: 13px; }
+        .hidden { display: none; }
+        .stats { display: flex; justify-content: space-between; text-align: center; }
+        .tree-item { background: #252525; padding: 10px; margin: 5px 0; border-radius: 8px; border-right: 5px solid var(--gold); }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+        th, td { border: 1px solid #444; padding: 8px; text-align: center; }
+        .status-badge { padding: 4px 8px; border-radius: 5px; font-size: 11px; }
+        .pending { background: #856404; color: #fff; }
+        .success { background: #155724; color: #fff; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 style="text-align: center; color: var(--gold);">🚀 Helmy Card V2</h1>
+
+    <div id="auth-section" class="card">
+        <div style="display:flex; gap:10px; margin-bottom:15px">
+            <button id="loginTab" class="btn-main" onclick="switchTab('login')">تسجيل دخول</button>
+            <button id="registerTab" class="btn-sub" onclick="switchTab('register')">حساب جديد</button>
+        </div>
+        <input type="email" id="email" placeholder="الإيميل">
+        <input type="password" id="password" placeholder="الباسورد">
+        
+        <div id="register-only" class="hidden">
+            <input type="text" id="fullName" placeholder="اسمك بالكامل">
+            <input type="text" id="customMyCode" placeholder="كود الدعوة الخاص بك (مثلاً: kimo1)">
+            <input type="text" id="wallet" placeholder="رقم الكاش">
+            <input type="text" id="invitedBy" placeholder="كود الشخص الذي دعاك">
+        </div>
+        <button class="btn-main" id="mainBtn" onclick="handleAuth()">دخول</button>
+    </div>
+
+    <div id="user-section" class="hidden">
+        <div class="card">
+            <h3>أهلاً: <span id="userNameShow" style="color:var(--gold)">...</span></h3>
+            <div class="stats">
+                <div><h3 id="balance">0</h3><p>رصيدك</p></div>
+                <div><h3 id="invitesCount">0</h3><p>فريقك</p></div>
+            </div>
+            <p style="text-align:center; font-size:12px; border:1px dashed #555; padding:5px">كود دعوتك: <b id="myCodeShow" style="color:var(--gold)"></b></p>
+        </div>
+        
+        <div class="card" style="border: 2px solid var(--gold);">
+            <h3>💰 طلب شحن رصيد</h3>
+            <input type="number" id="depAmount" placeholder="اكتب المبلغ المشحون">
+            <button class="btn-main" onclick="requestDeposit()">إرسال إشعار لحلمي ✉️</button>
+            <div id="lastRequestStatus" style="text-align:center; margin-top:10px"></div>
+        </div>
+
+        <div class="card">
+            <h3>🌳 فريقك</h3>
+            <div id="tree"></div>
+        </div>
+        <button class="btn-sub" onclick="logout()">خروج</button>
+    </div>
+
+    <div id="admin-section" class="hidden">
+        <div class="card" style="border: 2px solid #28a745;">
+            <h2 style="color:#28a745; text-align: center;">لوحة إدارة حلمي 👑</h2>
+            <table>
+                <thead>
+                    <tr><th>الوكيل</th><th>المبلغ+5%</th><th>الإجراء</th></tr>
+                </thead>
+                <tbody id="adminList"></tbody>
+            </table>
+        </div>
+        <button class="btn-sub" onclick="logout()">خروج</button>
+    </div>
+</div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyBAIB47-TaUEZDZHlXgAsI4RUckzn8C3Io",
+        authDomain: "helmy-card-contest.firebaseapp.com",
+        projectId: "helmy-card-contest",
+        storageBucket: "helmy-card-contest.firebasestorage.app",
+        messagingSenderId: "765996977390",
+        appId: "1:765996977390:web:b5ce6c4980e6bbfa40b7ff"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+    const ADMIN_EMAIL = "admin@helmy.com";
+
+    function switchTab(m) {
+        const isReg = m === 'register';
+        document.getElementById('register-only').classList.toggle('hidden', !isReg);
+        document.getElementById('mainBtn').innerText = isReg ? 'إنشاء حساب' : 'دخول';
+        document.getElementById('loginTab').style.background = isReg ? '#333' : '#ff9800';
+        document.getElementById('registerTab').style.background = isReg ? '#ff9800' : '#333';
+        window.currentMode = m;
+    }
+
+    async function handleAuth() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        if (window.currentMode !== 'register') {
+            auth.signInWithEmailAndPassword(email, password).catch(e => alert("خطأ في البيانات"));
+        } else {
+            const name = document.getElementById('fullName').value;
+            const myCode = document.getElementById('customMyCode').value;
+            const wallet = document.getElementById('wallet').value;
+            const invBy = document.getElementById('invitedBy').value;
+            try {
+                const res = await auth.createUserWithEmailAndPassword(email, password);
+                await db.collection("users").doc(res.user.uid).set({
+                    name, myCode, wallet, email, balance: 0, invitedBy: invBy || "direct", uid: res.user.uid
+                });
+            } catch (e) { alert(e.message); }
+        }
+    }
+
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            document.getElementById('auth-section').classList.add('hidden');
+            if (user.email === ADMIN_EMAIL) {
+                document.getElementById('admin-section').classList.remove('hidden');
+                loadAdminData();
+            } else {
+                document.getElementById('user-section').classList.remove('hidden');
+                loadUserData(user);
+                monitorMyRequests(user.uid);
+            }
+        }
+    });
+
+    function loadUserData(user) {
+        db.collection("users").doc(user.uid).onSnapshot(d => {
+            const data = d.data();
+            if(data) {
+                document.getElementById('userNameShow').innerText = data.name;
+                document.getElementById('balance').innerText = data.balance + " ج";
+                document.getElementById('myCodeShow').innerText = data.myCode;
+                db.collection("users").where("invitedBy", "==", data.myCode).onSnapshot(team => {
+                    document.getElementById('invitesCount').innerText = team.size;
+                    const tree = document.getElementById('tree');
+                    tree.innerHTML = team.empty ? "لا يوجد فريق" : "";
+                    team.forEach(m => { tree.innerHTML += `<div class="tree-item">👤 ${m.data().name}</div>`; });
+                });
+            }
+        });
+    }
+
+    async function requestDeposit() {
+        const amount = Number(document.getElementById('depAmount').value);
+        if(amount < 1000) return alert("أقل شحن 1000ج");
+        const userDoc = await db.collection("users").doc(auth.currentUser.uid).get();
+        await db.collection("requests").add({
+            uid: auth.currentUser.uid,
+            name: userDoc.data().name,
+            amount: amount,
+            status: "معلق",
+            createdAt: new Date()
+        });
+        alert("تم إرسال الإشعار لحلمي بنجاح!");
+    }
+
+    function monitorMyRequests(uid) {
+        db.collection("requests").where("uid", "==", uid).orderBy("createdAt", "desc").limit(1).onSnapshot(s => {
+            const statusDiv = document.getElementById('lastRequestStatus');
+            if(!s.empty) {
+                const req = s.docs[0].data();
+                if(req.status === "تم") {
+                    statusDiv.innerHTML = `<span class="status-badge success">✅ تم تأكيد شحنتك الأخيرة بنجاح!</span>`;
+                } else {
+                    statusDiv.innerHTML = `<span class="status-badge pending">⏳ شحنتك قيد المراجعة من حلمي...</span>`;
+                }
+            }
+        });
+    }
+
+    function loadAdminData() {
+        db.collection("requests").where("status", "==", "معلق").onSnapshot(s => {
+            const list = document.getElementById('adminList');
+            list.innerHTML = "";
+            s.forEach(doc => {
+                const d = doc.data();
+                const total = d.amount + (d.amount * 0.05);
+                list.innerHTML += `<tr>
+                    <td>${d.name}</td>
+                    <td>${total}ج</td>
+                    <td><button class="btn-main" onclick="approve('${doc.id}', '${d.uid}', ${total})">تأكيد</button></td>
+                </tr>`;
+            });
+        });
+    }
+
+    async function approve(id, uid, total) {
+        await db.collection("users").doc(uid).update({ balance: firebase.firestore.FieldValue.increment(total) });
+        await db.collection("requests").doc(id).update({ status: "تم" });
+    }
+
+    function logout() { auth.signOut(); location.reload(); }
+</script>
+</body>
+</html>
+
