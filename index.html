@@ -3,43 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Helmy Card - النظام المطور</title>
+    <title>Helmy Card - المسابقة الكبرى</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
     <style>
         :root { --red: #ff0000; --dark-red: #8b0000; --bg: #000000; --card: #0a0a0a; --gold: #ff9800; --green: #00ff00; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: white; margin: 0; padding: 15px; }
-        .container { max-width: 650px; margin: auto; }
-        .card { background: var(--card); border-radius: 15px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--dark-red); box-shadow: 0 0 15px rgba(255, 0, 0, 0.2); position: relative; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: white; margin: 0; padding: 10px; }
+        .container { max-width: 700px; margin: auto; }
+        .card { background: var(--card); border-radius: 15px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--dark-red); box-shadow: 0 0 15px rgba(255, 0, 0, 0.2); position: relative; }
         .vip-tag { position: absolute; top: 10px; left: 10px; background: var(--gold); color: black; font-size: 10px; padding: 3px 8px; border-radius: 5px; font-weight: bold; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #333; background: #111; color: white; box-sizing: border-box; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #333; background: #111; color: white; box-sizing: border-box; font-size: 14px; }
         .btn-main { background: linear-gradient(45deg, var(--dark-red), var(--red)); color: white; font-weight: bold; cursor: pointer; border: none; padding: 12px; border-radius: 8px; width: 100%; margin-top: 10px; }
         .btn-sub { background: #222; color: #ccc; cursor: pointer; border: none; padding: 10px; border-radius: 5px; width: 100%; }
         .hidden { display: none !important; }
-        .floating-btn { position: fixed; bottom: 20px; left: 20px; background: var(--red); color: white; padding: 15px 25px; border-radius: 50px; font-weight: bold; cursor: pointer; border: none; z-index: 1000; box-shadow: 0 0 20px var(--red); }
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; display: flex; align-items: center; justify-content: center; }
-        .modal-content { background: var(--card); border: 2px solid var(--red); width: 90%; max-width: 500px; padding: 25px; border-radius: 20px; max-height: 85vh; overflow-y: auto; }
-        table { width: 100%; border-collapse: collapse; font-size: 10px; margin-top: 10px; }
+        .floating-btn { position: fixed; bottom: 20px; left: 20px; background: var(--red); color: white; padding: 15px 20px; border-radius: 50px; font-weight: bold; cursor: pointer; border: none; z-index: 1000; box-shadow: 0 0 20px var(--red); }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; display: flex; align-items: center; justify-content: center; }
+        .modal-content { background: var(--card); border: 2px solid var(--red); width: 95%; max-width: 500px; padding: 20px; border-radius: 20px; max-height: 85vh; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 10px; background: #050505; }
         th, td { border: 1px solid #222; padding: 8px; text-align: center; }
-        .badge-old { color: #aaa; border: 1px solid #333; padding: 2px 4px; border-radius: 4px; }
-        .badge-new { color: var(--green); border: 1px solid var(--green); padding: 2px 4px; border-radius: 4px; }
+        th { color: var(--gold); background: #111; }
+        .badge-new { color: var(--green); font-weight: bold; }
+        .badge-old { color: #888; }
     </style>
 </head>
 <body>
 
-<button class="floating-btn" onclick="showTerms(true)">📜 قواعد المسابقة</button>
+<button class="floating-btn" onclick="showTerms(true)">📜 شروط المسابقة</button>
 
 <div id="termsModal" class="modal hidden">
-    <div class="modal-content">
-        <h2 style="color:var(--red); text-align:center;">🦅 مسابقة Helmy Card</h2>
-        <div style="line-height: 1.6; text-align: right; font-size: 14px;">
-            <p><b>🎁 مكافأة المدعو:</b> 5% بونص فوري على أول إيداع.</p>
-            <p><b>🎁 مكافأة الداعي:</b> 10% بونص أسبوعي (لفريق > 10) أو 5% بونص.</p>
-            <p><b>💰 الحد الأدنى:</b> 1000 جنيه مصري.</p>
-            <p style="color:red; text-align:center;">🚫 تعدد الحسابات = حظر شامل.</p>
+    <div class="modal-content text-right" dir="rtl">
+        <h2 style="color:var(--red); text-align:center; margin-top:0;">🚀🔥 مسابقة الدعوة – Helmy Card</h2>
+        <div style="line-height: 1.6; font-size: 13px; color: #ddd;">
+            <p style="color:var(--gold); text-align:center;"><b>"ادعي صديقك واكسب إنت وهو 👑"</b></p>
+            <p><b>1. المكافآت:</b><br>
+            👤 الداعي: 10% بونص (فريق > 10) أو 5% (فريق < 10).<br>
+            👥 المدعو الجديد: 5% بونص على أول إيداع (1000ج فأكثر).</p>
+            <p><b>2. الشروط المالية:</b><br>
+            - أقل إيداع 1000 جنيه مصري.<br>
+            - البونص على أول إيداع فقط للمدعو.</p>
+            <p><b>3. المميزات المستمرة:</b><br>
+            - 1% إلى 2% عمولة مدى الحياة على الفريق.<br>
+            - اعتماد كـ وكيل رسمي وتوثيق الحساب للـ Top 1.</p>
+            <p style="color:red; border-top:1px solid #333; padding-top:10px;">⚠️ <b>تنبيه:</b> تعدد الحسابات = حظر الفريق بالكامل فوراً.</p>
         </div>
-        <button class="btn-main" onclick="showTerms(false)">موافق</button>
+        <button class="btn-main" onclick="showTerms(false)">موافق.. ابدأ الآن</button>
     </div>
 </div>
 
@@ -47,49 +55,45 @@
     <h1 style="text-align: center; color: var(--red); text-shadow: 0 0 15px var(--red); margin: 20px 0;">🦅 HELMY CARD</h1>
 
     <div id="auth-section" class="card">
-        <div style="display:flex; gap:10px; margin-bottom:20px">
+        <div style="display:flex; gap:10px; margin-bottom:15px">
             <button id="btnL" class="btn-main" onclick="toggleAuth('login')">دخول</button>
-            <button id="btnR" class="btn-sub" onclick="toggleAuth('register')">تسجيل</button>
+            <button id="btnR" class="btn-sub" onclick="toggleAuth('register')">تسجيل وكيل</button>
         </div>
         <input type="email" id="email" placeholder="البريد الإلكتروني">
         <input type="password" id="password" placeholder="كلمة المرور">
-        
         <div id="reg-fields" class="hidden">
-            <input type="text" id="fullName" placeholder="الاسم بالكامل">
+            <input type="text" id="fullName" placeholder="الاسم الثلاثي">
             <input type="text" id="customCode" placeholder="كود الدعوة الخاص بك">
-            <input type="text" id="invBy" placeholder="كود الداعي (اختياري)">
-            <label style="font-size: 12px; margin-right: 5px;">حالة الوكيل:</label>
+            <input type="text" id="invBy" placeholder="كود الداعي (إن وجد)">
             <select id="userStatus">
-                <option value="جديد">وكيل جديد 🆕</option>
-                <option value="قديم">وكيل قديم 🔙</option>
+                <option value="جديد">أنا وكيل جديد 🆕</option>
+                <option value="قديم">أنا وكيل قديم 🔙</option>
             </select>
         </div>
-        
-        <button class="btn-main" id="authBtn" onclick="processAuth()">تسجيل الدخول</button>
+        <button class="btn-main" id="authBtn" onclick="processAuth()">دخول</button>
     </div>
 
     <div id="user-section" class="hidden">
         <div class="card" style="border-color: var(--gold);">
             <div class="vip-tag" id="vipLevel">VIP</div>
-            <h3>الوكيل: <span id="uName" style="color:var(--red)">...</span> (<span id="uStatusDisplay" style="font-size: 12px;"></span>)</h3>
+            <h3>الوكيل: <span id="uName" style="color:var(--red)">...</span></h3>
+            <p style="font-size:12px; margin-top:-10px;">الحالة: <span id="uStatusDisplay"></span></p>
             <div style="display:flex; justify-content:space-around; text-align:center;">
                 <div><h2 id="uBalance" style="color:var(--gold); margin:0;">0</h2><p>رصيدك</p></div>
                 <div><h2 id="uTeam" style="color:var(--gold); margin:0;">0</h2><p>فريقك</p></div>
             </div>
-            <div style="text-align:center; background:#111; padding:10px; border:1px dashed var(--gold); border-radius:8px; margin-top:10px;">
+            <div style="text-align:center; background:#111; padding:10px; border:1px dashed var(--gold); border-radius:8px;">
                 <small>كود دعوتك:</small><br><b id="uCode" style="font-size:20px; color:var(--gold)"></b>
             </div>
         </div>
-
         <div class="card">
-            <h3 style="color:var(--green)">💰 إبلاغ حلمي بشحن رصيد</h3>
-            <input type="number" id="depAmt" placeholder="المبلغ المشحون">
-            <button class="btn-main" onclick="sendReq()">إرسال الطلب</button>
+            <h3>💰 طلب شحن رصيد</h3>
+            <input type="number" id="depAmt" placeholder="المبلغ (1000 جنيه فأكثر)">
+            <button class="btn-main" onclick="sendReq()">إرسال الطلب لحلمي</button>
             <div id="reqMsg" style="text-align:center; margin-top:10px"></div>
         </div>
-
         <div class="card">
-            <h3>🌳 أعضاء فريقك</h3>
+            <h3>🌳 شجرة وكلائك</h3>
             <div id="tree"></div>
         </div>
         <button class="btn-sub" onclick="logout()">خروج</button>
@@ -99,18 +103,20 @@
         <div class="card" style="border-color: var(--green);">
             <h2 style="color:var(--green); text-align:center">لوحة تحكم حلمي 👑</h2>
             <table>
-                <thead><tr><th>الوكيل</th><th>الإيداع</th><th>البونص</th><th>تأكيد</th></tr></thead>
+                <thead><tr><th>الوكيل</th><th>المبلغ</th><th>بونص</th><th>تأكيد</th></tr></thead>
                 <tbody id="admRequests"></tbody>
             </table>
         </div>
         <div class="card">
-            <h3>كل الوكلاء المسجلين</h3>
-            <table>
-                <thead><tr><th>الاسم</th><th>الرصيد</th><th>الحالة</th><th>ID الوكيل</th><th>إجراء</th></tr></thead>
-                <tbody id="admUsers"></tbody>
-            </table>
+            <h3>قائمة الوكلاء والـ ID</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead><tr><th>الاسم</th><th>الحالة</th><th>الرصيد</th><th>ID الوكيل</th><th>كوده</th><th>حذف</th></tr></thead>
+                    <tbody id="admUsers"></tbody>
+                </table>
+            </div>
         </div>
-        <button class="btn-sub" onclick="logout()">تسجيل خروج الإدارة</button>
+        <button class="btn-sub" onclick="logout()">خروج</button>
     </div>
 </div>
 
@@ -133,25 +139,23 @@
         window.mode = m;
         const isR = m === 'register';
         document.getElementById('reg-fields').classList.toggle('hidden', !isR);
-        document.getElementById('authBtn').innerText = isR ? 'تأكيد التسجيل' : 'تسجيل الدخول';
-        document.getElementById('btnL').className = isR ? 'btn-sub' : 'btn-main';
-        document.getElementById('btnR').className = isR ? 'btn-main' : 'btn-sub';
+        document.getElementById('authBtn').innerText = isR ? 'تأكيد الحساب' : 'دخول';
     }
 
     async function processAuth() {
         const email = document.getElementById('email').value;
         const pass = document.getElementById('password').value;
         if(window.mode !== 'register') {
-            auth.signInWithEmailAndPassword(email, pass).catch(e => alert("بيانات الدخول خاطئة"));
+            auth.signInWithEmailAndPassword(email, pass).catch(e => alert("خطأ بالبيانات"));
         } else {
             const name = document.getElementById('fullName').value;
             const myCode = document.getElementById('customCode').value;
-            const inv = document.getElementById('invBy').value;
             const status = document.getElementById('userStatus').value;
+            const inv = document.getElementById('invBy').value;
             try {
                 const res = await auth.createUserWithEmailAndPassword(email, pass);
                 await db.collection("users").doc(res.user.uid).set({
-                    name, myCode, email, balance: 0, invitedBy: inv || "direct", uid: res.user.uid, 
+                    name, myCode, email, balance: 0, invitedBy: inv || "direct", uid: res.user.uid,
                     isFirstDep: true, userType: status 
                 });
             } catch(e) { alert(e.message); }
@@ -183,7 +187,7 @@
                 db.collection("users").where("invitedBy", "==", u.myCode).onSnapshot(s => {
                     document.getElementById('uTeam').innerText = s.size;
                     const tree = document.getElementById('tree');
-                    tree.innerHTML = s.empty ? "لا يوجد وكلاء في فريقك" : "";
+                    tree.innerHTML = s.empty ? "لا يوجد وكلاء" : "";
                     s.forEach(m => tree.innerHTML += `<div style="background:#111; padding:8px; margin-top:5px; border-radius:5px; border-right:3px solid var(--red);">👤 ${m.data().name}</div>`);
                 });
             }
@@ -192,19 +196,21 @@
             const msg = document.getElementById('reqMsg');
             if(!s.empty) {
                 const r = s.docs[0].data();
-                msg.innerHTML = r.status === "تم" ? `<span style="color:var(--green)">✅ تمت الموافقة</span>` : `<span style="color:#888">⏳ قيد المراجعة</span>`;
+                msg.innerHTML = r.status === "تم" ? `<span style="color:var(--green)">✅ تم تفعيل الرصيد</span>` : `<span style="color:#888">⏳ بانتظار حلمي..</span>`;
             }
         });
     }
 
     async function sendReq() {
         const amt = Number(document.getElementById('depAmt').value);
-        if(amt < 1000) return alert("أقل إيداع 1000 جنيه");
-        const uDoc = await db.collection("users").doc(auth.currentUser.uid).get();
-        const u = uDoc.data();
-        const bonus = (u.invitedBy !== "direct" && u.isFirstDep) ? (amt * 0.05) : 0;
-        await db.collection("requests").add({ uid: auth.currentUser.uid, name: u.name, amount: amt, bonus: bonus, status: "معلق", createdAt: new Date() });
-        alert("تم إرسال الطلب!");
+        if(amt < 1000) return alert("أقل إيداع 1000ج");
+        const u = (await db.collection("users").doc(auth.currentUser.uid).get()).data();
+        // بونص 5% ينزل فقط للوكيل "الجديد" وفي أول شحنة فقط
+        const bonus = (u.userType === "جديد" && u.isFirstDep) ? (amt * 0.05) : 0;
+        await db.collection("requests").add({ 
+            uid: auth.currentUser.uid, name: u.name, amount: amt, bonus: bonus, status: "معلق", createdAt: new Date() 
+        });
+        alert("تم إرسال الإشعار!");
     }
 
     function loadAdmin() {
@@ -213,7 +219,7 @@
             list.innerHTML = "";
             s.forEach(doc => {
                 const d = doc.data();
-                list.innerHTML += `<tr><td>${d.name}</td><td>${d.amount}ج</td><td style="color:var(--gold)">+${d.bonus}ج</td><td><button onclick="approve('${doc.id}', '${d.uid}', ${d.amount}, ${d.bonus})" style="background:var(--green); border:none; padding:4px; border-radius:4px; font-size:10px;">تأكيد</button></td></tr>`;
+                list.innerHTML += `<tr><td>${d.name}</td><td>${d.amount}ج</td><td style="color:var(--gold)">+${d.bonus}ج</td><td><button onclick="approve('${doc.id}', '${d.uid}', ${d.amount}, ${d.bonus})" style="background:var(--green); border:none; padding:5px; border-radius:5px;">تأكيد</button></td></tr>`;
             });
         });
         db.collection("users").onSnapshot(s => {
@@ -222,8 +228,8 @@
             s.forEach(doc => {
                 const u = doc.data();
                 if(u.email !== ADMIN) {
-                    const statusClass = u.userType === 'جديد' ? 'badge-new' : 'badge-old';
-                    list.innerHTML += `<tr><td>${u.name}</td><td>${u.balance}ج</td><td><span class="${statusClass}">${u.userType || 'جديد'}</span></td><td style="font-size:8px; color:#555;">${u.uid}</td><td><button onclick="delU('${doc.id}')" style="background:red; color:white; border:none; padding:2px 5px; border-radius:3px;">X</button></td></tr>`;
+                    const st = u.userType === "جديد" ? "badge-new" : "badge-old";
+                    list.innerHTML += `<tr><td>${u.name}</td><td><span class="${st}">${u.userType || "جديد"}</span></td><td>${u.balance}ج</td><td style="font-size:8px;">${u.uid}</td><td>${u.myCode}</td><td><button onclick="delU('${doc.id}')" style="background:red; color:white; border:none; border-radius:3px;">X</button></td></tr>`;
                 }
             });
         });
@@ -234,7 +240,7 @@
         await db.collection("requests").doc(id).update({ status: "تم" });
     }
 
-    async function delU(id) { if(confirm("حذف الحساب نهائياً؟")) await db.collection("users").doc(id).delete(); }
+    async function delU(id) { if(confirm("حذف الوكيل؟")) await db.collection("users").doc(id).delete(); }
     function logout() { auth.signOut(); location.reload(); }
 </script>
 </body>
