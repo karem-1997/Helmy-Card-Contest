@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Helmy Card V2 - Premium Edition</title>
+    <title>Helmy Card V2 - النسخة الكاملة</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
@@ -11,89 +11,83 @@
         :root { --red: #ff0000; --dark-red: #8b0000; --bg: #000000; --card: #0a0a0a; --gold: #ff9800; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: white; margin: 0; padding: 15px; }
         .container { max-width: 600px; margin: auto; }
-        
-        /* الاستايل الفخم */
         .card { background: var(--card); border-radius: 15px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--dark-red); box-shadow: 0 0 15px rgba(255, 0, 0, 0.2); }
-        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #333; background: #111; color: white; font-size: 15px; }
-        input:focus { border-color: var(--red); outline: none; box-shadow: 0 0 5px var(--red); }
+        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #333; background: #111; color: white; }
+        .btn-main { background: linear-gradient(45deg, var(--dark-red), var(--red)); color: white; font-weight: bold; cursor: pointer; border: none; padding: 12px; border-radius: 8px; width: 100%; }
+        .btn-sub { background: #222; color: #ccc; cursor: pointer; border: none; padding: 8px; border-radius: 5px; font-size: 12px; width: 100%; }
+        .hidden { display: none !important; }
         
-        .btn-main { background: linear-gradient(45deg, var(--dark-red), var(--red)); color: white; font-weight: bold; cursor: pointer; border: none; padding: 12px; border-radius: 8px; width: 100%; margin-top: 10px; }
-        .btn-main:hover { opacity: 0.9; transform: scale(0.98); }
-        .btn-sub { background: #222; color: #ccc; cursor: pointer; border: none; padding: 8px; border-radius: 5px; font-size: 12px; margin-top: 5px; }
+        /* الزر العائم */
+        .floating-btn { position: fixed; bottom: 20px; left: 20px; background: var(--red); color: white; padding: 15px 25px; border-radius: 50px; font-weight: bold; cursor: pointer; border: none; z-index: 1000; box-shadow: 0 0 15px var(--red); }
         
-        .hidden { display: none; }
-        .stats { display: flex; justify-content: space-between; text-align: center; margin: 15px 0; }
-        .stats h3 { color: var(--gold); margin: 5px 0; }
+        /* مودال القواعد */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; display: flex; align-items: center; justify-content: center; }
+        .modal-content { background: var(--card); border: 2px solid var(--red); width: 90%; max-width: 500px; padding: 25px; border-radius: 20px; max-height: 80vh; overflow-y: auto; }
         
-        .tree-item { background: #111; padding: 10px; margin: 5px 0; border-radius: 8px; border-right: 4px solid var(--red); font-size: 13px; }
-        
-        /* لوحة التحكم الجداول */
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 11px; }
-        th, td { border: 1px solid #222; padding: 10px; text-align: center; }
-        th { background: var(--dark-red); color: white; }
-        
-        .floating-btn { position: fixed; bottom: 20px; left: 20px; background: var(--red); color: white; padding: 12px 20px; border-radius: 50px; font-weight: bold; cursor: pointer; border: none; z-index: 1000; box-shadow: 0 0 10px var(--red); }
-        
-        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; display: inline-block; }
-        .pending { background: #555; }
-        .success { background: green; }
-        
-        .admin-actions button { margin: 2px; padding: 5px; font-size: 10px; cursor: pointer; border-radius: 3px; border: none; }
-        .del-btn { background: #ff4444; color: white; }
-        .edit-btn { background: #ff9800; color: black; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 10px; }
+        th, td { border: 1px solid #222; padding: 8px; text-align: center; }
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; }
     </style>
 </head>
 <body>
 
-<button class="floating-btn" onclick="toggleModal(true)">📜 القواعد</button>
+<button class="floating-btn" onclick="showTerms(true)">📜 شروط المسابقة</button>
 
-<div id="termsModal" class="hidden" style="position:fixed; z-index:2001; background:rgba(0,0,0,0.9); width:100%; height:100%; top:0; left:0; display: flex; align-items: center; justify-content: center;">
-    <div class="card" style="max-width: 80%;">
-        <h2 style="color:var(--red); text-align:center">🏆 شروط المسابقة</h2>
-        <p>1. شحن 1000ج كحد أدنى.<br>2. بونص 5% عند الشحن.<br>3. بونص 10% من شحن فريقك.<br>4. تفعيل حلمي يدوي.</p>
-        <button class="btn-main" onclick="toggleModal(false)">فهمت</button>
+<div id="termsModal" class="modal hidden">
+    <div class="modal-content">
+        <h2 style="color:var(--red); text-align:center; border-bottom: 1px solid var(--red); padding-bottom: 10px;">🏆 شروط وقواعد المسابقة</h2>
+        <div style="line-height: 1.8; text-align: right; font-size: 14px;">
+            <p><b>1. نظام الإيداع:</b> يجب شحن مبلغ 1000 جنيه كحد أدنى للدخول في المسابقة.</p>
+            <p><b>2. بونص الإيداع:</b> يحصل الوكيل المشحن على 5% بونص فوري يضاف لرصيده بعد تأكيد حلمي.</p>
+            <p><b>3. بونص الدعوة:</b> يحصل الشخص "الداعي" على 10% بونص من قيمة شحن أي شخص يسجل من خلاله خلال فترة المسابقة.</p>
+            <p><b>4. التفعيل اليدوي:</b> لا يتم إضافة أي رصيد إلا بعد مراجعة حلمي للتحويل الفعلي لضمان حقوق الجميع.</p>
+            <p><b>5. الترقيات:</b> الوصول لـ 10 دعوات فعالة يؤهلك لمستوى VIP 7 ومميزات إضافية.</p>
+            <p><b>6. الأمان:</b> أي محاولة تلاعب بالطلبات تعرض الحساب للحظر النهائي.</p>
+            <p style="color:var(--gold); font-weight:bold; border-top:1px solid #333; padding-top:10px;">ملاحظة: هذه الشروط ملزمة لجميع المشتركين لضمان نزاهة المسابقة.</p>
+        </div>
+        <button class="btn-main" onclick="showTerms(false)">إغلاق القواعد</button>
     </div>
 </div>
 
 <div class="container">
-    <h1 style="text-align: center; color: var(--red); text-shadow: 0 0 10px var(--red);">🦅 HELMY CARD V2</h1>
+    <h1 style="text-align: center; color: var(--red); text-shadow: 0 0 15px var(--red); margin-top: 40px;">🦅 HELMY CARD V2</h1>
 
     <div id="auth-section" class="card">
-        <div style="display:flex; gap:10px; margin-bottom:15px">
-            <button id="tabL" class="btn-main" onclick="switchTab('login')">دخول</button>
-            <button id="tabR" class="btn-sub" onclick="switchTab('register')">تسجيل</button>
+        <div style="display:flex; gap:10px; margin-bottom:20px">
+            <button id="btnL" class="btn-main" onclick="toggleAuth('login')">دخول</button>
+            <button id="btnR" class="btn-sub" onclick="toggleAuth('register')">تسجيل جديد</button>
         </div>
         <input type="email" id="email" placeholder="البريد الإلكتروني">
         <input type="password" id="password" placeholder="كلمة المرور">
         <div id="reg-fields" class="hidden">
             <input type="text" id="fullName" placeholder="الاسم بالكامل">
-            <input type="text" id="customCode" placeholder="كود الدعوة الخاص بك">
+            <input type="text" id="customCode" placeholder="كود الدعوة الخاص بك (مثلاً: kimo1)">
             <input type="text" id="wallet" placeholder="رقم محفظة الكاش">
-            <input type="text" id="invBy" placeholder="كود الداعي (اختياري)">
+            <input type="text" id="invBy" placeholder="كود الداعي (إن وجد)">
         </div>
-        <button class="btn-main" id="mainBtn" onclick="handleAuth()">دخول الأن</button>
+        <button class="btn-main" id="authBtn" onclick="processAuth()" style="margin-top:15px">دخول الأن</button>
     </div>
 
     <div id="user-section" class="hidden">
         <div class="card" style="border-color: var(--gold);">
-            <h3>مرحباً: <span id="uName" style="color:var(--red)">...</span></h3>
-            <div class="stats">
-                <div><h3 id="uBalance">0</h3><p>رصيدك</p></div>
-                <div><h3 id="uTeam">0</h3><p>فريقك</p></div>
+            <h3>أهلاً: <span id="uName" style="color:var(--red)">...</span></h3>
+            <div style="display:flex; justify-content:space-around; text-align:center;">
+                <div><h2 id="uBalance" style="color:var(--gold)">0</h2><p>رصيدك</p></div>
+                <div><h2 id="uTeam" style="color:var(--gold)">0</h2><p>فريقك</p></div>
             </div>
-            <p style="text-align:center; font-size:12px; background:#111; padding:8px; border-radius:5px">كود دعوتك: <b id="uCode" style="color:var(--gold)"></b></p>
+            <div style="text-align:center; background:#111; padding:10px; border:1px dashed var(--gold); border-radius:8px;">
+                <small>كود دعوتك:</small><br><b id="uCode" style="font-size:20px; color:var(--gold)"></b>
+            </div>
         </div>
-
-        <div class="card" style="border-color: var(--red);">
-            <h3>💰 إشعار شحن جديد</h3>
-            <input type="number" id="depAmt" placeholder="المبلغ المشحون">
-            <button class="btn-main" onclick="sendRequest()">إبلاغ حلمي بالشحن ✉️</button>
-            <div id="reqStatus" style="text-align:center; margin-top:10px"></div>
-        </div>
-
         <div class="card">
-            <h3>🌳 الشجرة الخاصة بك</h3>
-            <div id="treeList"></div>
+            <h3>💰 إبلاغ حلمي بشحن جديد</h3>
+            <input type="number" id="depAmt" placeholder="المبلغ الذي حولته">
+            <button class="btn-main" onclick="sendReq()">إرسال الطلب</button>
+            <div id="reqMsg" style="text-align:center; margin-top:10px"></div>
+        </div>
+        <div class="card">
+            <h3>🌳 شجرة وكلائك</h3>
+            <div id="tree"></div>
         </div>
         <button class="btn-sub" onclick="logout()">تسجيل خروج</button>
     </div>
@@ -101,21 +95,19 @@
     <div id="admin-section" class="hidden">
         <div class="card" style="border-color: #00ff00;">
             <h2 style="color:#00ff00; text-align:center">لوحة التحكم العليا 👑</h2>
-            <p style="font-size:12px">طلبات الشحن المعلقة:</p>
-            <table id="reqTable">
-                <thead><tr><th>الوكيل</th><th>المبلغ+5%</th><th>الإجراء</th></tr></thead>
-                <tbody id="adminReqList"></tbody>
+            <table>
+                <thead><tr><th>الوكيل</th><th>المبلغ+5%</th><th>تأكيد</th></tr></thead>
+                <tbody id="admRequests"></tbody>
             </table>
         </div>
-
         <div class="card">
-            <h2 style="color:var(--gold); text-align:center">إدارة الوكلاء</h2>
-            <table id="usersTable">
-                <thead><tr><th>الاسم</th><th>الرصيد</th><th>الإجراء</th></tr></thead>
-                <tbody id="adminUserList"></tbody>
+            <h3>إدارة جميع الوكلاء</h3>
+            <table>
+                <thead><tr><th>الاسم</th><th>الرصيد</th><th>إجراء</th></tr></thead>
+                <tbody id="admUsers"></tbody>
             </table>
         </div>
-        <button class="btn-sub" onclick="logout()">خروج</button>
+        <button class="btn-sub" onclick="logout()">خروج نهائي</button>
     </div>
 </div>
 
@@ -131,17 +123,19 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const auth = firebase.auth();
-    const ADMIN_EMAIL = "admin@helmy.com";
+    const ADMIN = "admin@helmy.com";
 
-    function toggleModal(s) { document.getElementById('termsModal').classList.toggle('hidden', !s); }
-    function switchTab(m) {
+    function showTerms(s) { document.getElementById('termsModal').classList.toggle('hidden', !s); }
+    function toggleAuth(m) {
+        window.mode = m;
         const isR = m === 'register';
         document.getElementById('reg-fields').classList.toggle('hidden', !isR);
-        document.getElementById('mainBtn').innerText = isR ? 'إنشاء حساب جديد' : 'دخول الأن';
-        window.mode = m;
+        document.getElementById('authBtn').innerText = isR ? 'إتمام التسجيل' : 'دخول الأن';
+        document.getElementById('btnL').className = isR ? 'btn-sub' : 'btn-main';
+        document.getElementById('btnR').className = isR ? 'btn-main' : 'btn-sub';
     }
 
-    async function handleAuth() {
+    async function processAuth() {
         const email = document.getElementById('email').value;
         const pass = document.getElementById('password').value;
         if(window.mode !== 'register') {
@@ -149,12 +143,12 @@
         } else {
             const name = document.getElementById('fullName').value;
             const myCode = document.getElementById('customCode').value;
-            const wallet = document.getElementById('wallet').value;
-            const invBy = document.getElementById('invBy').value;
+            const wall = document.getElementById('wallet').value;
+            const inv = document.getElementById('invBy').value;
             try {
                 const res = await auth.createUserWithEmailAndPassword(email, pass);
                 await db.collection("users").doc(res.user.uid).set({
-                    name, myCode, wallet, email, balance: 0, invitedBy: invBy || "direct", uid: res.user.uid
+                    name, myCode, wallet: wall, email, balance: 0, invitedBy: inv || "direct", uid: res.user.uid
                 });
             } catch(e) { alert(e.message); }
         }
@@ -163,95 +157,76 @@
     auth.onAuthStateChanged(user => {
         if(user) {
             document.getElementById('auth-section').classList.add('hidden');
-            if(user.email === ADMIN_EMAIL) {
+            if(user.email === ADMIN) {
                 document.getElementById('admin-section').classList.remove('hidden');
-                loadAdminAll();
+                loadAdmin();
             } else {
                 document.getElementById('user-section').classList.remove('hidden');
-                loadUserData(user);
+                loadUser(user);
             }
         }
     });
 
-    function loadUserData(user) {
+    function loadUser(user) {
         db.collection("users").doc(user.uid).onSnapshot(d => {
-            const data = d.data();
-            if(data) {
-                document.getElementById('uName').innerText = data.name;
-                document.getElementById('uBalance').innerText = data.balance + " ج";
-                document.getElementById('uCode').innerText = data.myCode;
-                db.collection("users").where("invitedBy", "==", data.myCode).onSnapshot(team => {
-                    document.getElementById('uTeam').innerText = team.size;
-                    const tree = document.getElementById('treeList');
-                    tree.innerHTML = team.empty ? "لا يوجد وكلاء" : "";
-                    team.forEach(m => tree.innerHTML += `<div class="tree-item">👤 ${m.data().name}</div>`);
+            const u = d.data();
+            if(u) {
+                document.getElementById('uName').innerText = u.name;
+                document.getElementById('uBalance').innerText = u.balance + " ج";
+                document.getElementById('uCode').innerText = u.myCode;
+                db.collection("users").where("invitedBy", "==", u.myCode).onSnapshot(s => {
+                    document.getElementById('uTeam').innerText = s.size;
+                    const tree = document.getElementById('tree');
+                    tree.innerHTML = s.empty ? "لا يوجد وكلاء في شجرتك" : "";
+                    s.forEach(m => tree.innerHTML += `<div class="tree-item">👤 ${m.data().name} (${m.data().email})</div>`);
                 });
             }
         });
         db.collection("requests").where("uid", "==", user.uid).orderBy("createdAt", "desc").limit(1).onSnapshot(s => {
-            const stat = document.getElementById('reqStatus');
+            const msg = document.getElementById('reqMsg');
             if(!s.empty) {
                 const r = s.docs[0].data();
-                stat.innerHTML = r.status === "تم" ? `<span class="status-badge success">تم التأكيد ✅</span>` : `<span class="status-badge pending">بانتظار حلمي.. ⏳</span>`;
+                msg.innerHTML = r.status === "تم" ? `<span style="color:green">تم تأكيد شحنتك ✅</span>` : `<span style="color:gray">بانتظار مراجعة حلمي.. ⏳</span>`;
             }
         });
     }
 
-    async function sendRequest() {
+    async function sendReq() {
         const amt = Number(document.getElementById('depAmt').value);
         if(amt < 1000) return alert("أقل شحن 1000ج");
-        const userD = await db.collection("users").doc(auth.currentUser.uid).get();
-        await db.collection("requests").add({ uid: auth.currentUser.uid, name: userD.data().name, amount: amt, status: "معلق", createdAt: new Date() });
-        alert("تم إرسال الإشعار!");
+        const u = (await db.collection("users").doc(auth.currentUser.uid).get()).data();
+        await db.collection("requests").add({ uid: auth.currentUser.uid, name: u.name, amount: amt, status: "معلق", createdAt: new Date() });
+        alert("تم إرسال الطلب!");
     }
 
-    // وظائف حلمي (الأدمن)
-    function loadAdminAll() {
-        // جلب طلبات الشحن
+    function loadAdmin() {
         db.collection("requests").where("status", "==", "معلق").onSnapshot(s => {
-            const list = document.getElementById('adminReqList');
+            const list = document.getElementById('admRequests');
             list.innerHTML = "";
             s.forEach(doc => {
                 const d = doc.data();
                 const total = d.amount + (d.amount * 0.05);
-                list.innerHTML += `<tr><td>${d.name}</td><td>${total}ج</td><td><button class="btn-main" style="padding:5px" onclick="approveReq('${doc.id}', '${d.uid}', ${total})">تأكيد</button></td></tr>`;
+                list.innerHTML += `<tr><td>${d.name}</td><td>${total}ج</td><td><button class="btn-main" onclick="approve('${doc.id}', '${d.uid}', ${total})">تأكيد</button></td></tr>`;
             });
         });
-
-        // جلب كل الوكلاء للإدارة
         db.collection("users").onSnapshot(s => {
-            const list = document.getElementById('adminUserList');
+            const list = document.getElementById('admUsers');
             list.innerHTML = "";
             s.forEach(doc => {
                 const u = doc.data();
-                if(u.email !== ADMIN_EMAIL) {
-                    list.innerHTML += `<tr>
-                        <td>${u.name}</td>
-                        <td>${u.balance}ج</td>
-                        <td class="admin-actions">
-                            <button class="edit-btn" onclick="editBalance('${doc.id}', ${u.balance})">تعديل</button>
-                            <button class="del-btn" onclick="deleteUser('${doc.id}')">حذف</button>
-                        </td>
-                    </tr>`;
+                if(u.email !== ADMIN) {
+                    list.innerHTML += `<tr><td>${u.name}</td><td>${u.balance}ج</td><td><button onclick="delU('${doc.id}')" style="background:red; color:white; border:none; padding:5px; border-radius:3px">حذف</button></td></tr>`;
                 }
             });
         });
     }
 
-    async function approveReq(id, uid, total) {
+    async function approve(id, uid, total) {
         await db.collection("users").doc(uid).update({ balance: firebase.firestore.FieldValue.increment(total) });
         await db.collection("requests").doc(id).update({ status: "تم" });
     }
 
-    async function editBalance(id, current) {
-        const newVal = prompt("ادخل الرصيد الجديد:", current);
-        if(newVal !== null) await db.collection("users").doc(id).update({ balance: Number(newVal) });
-    }
-
-    async function deleteUser(id) {
-        if(confirm("هل أنت متأكد من حذف هذا الوكيل نهائياً؟")) await db.collection("users").doc(id).delete();
-    }
-
+    async function delU(id) { if(confirm("حذف الوكيل؟")) await db.collection("users").doc(id).delete(); }
     function logout() { auth.signOut(); location.reload(); }
 </script>
 </body>
