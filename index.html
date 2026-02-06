@@ -3,116 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Helmy Card - المسابقة الكبرى</title>
+    <title>Helmy Card V3 - Official</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
     <style>
-        :root { --red: #ff0000; --dark-red: #8b0000; --bg: #000000; --card: #0a0a0a; --gold: #ff9800; --green: #00ff00; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: white; margin: 0; padding: 10px; }
-        .container { max-width: 700px; margin: auto; }
-        .card { background: var(--card); border-radius: 15px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--dark-red); box-shadow: 0 0 15px rgba(255, 0, 0, 0.2); position: relative; }
-        .vip-tag { position: absolute; top: 10px; left: 10px; background: var(--gold); color: black; font-size: 10px; padding: 3px 8px; border-radius: 5px; font-weight: bold; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #333; background: #111; color: white; box-sizing: border-box; font-size: 14px; }
-        .btn-main { background: linear-gradient(45deg, var(--dark-red), var(--red)); color: white; font-weight: bold; cursor: pointer; border: none; padding: 12px; border-radius: 8px; width: 100%; margin-top: 10px; }
-        .btn-sub { background: #222; color: #ccc; cursor: pointer; border: none; padding: 10px; border-radius: 5px; width: 100%; }
+        :root { --red: #ff0000; --gold: #ff9800; --green: #00ff00; --bg: #000; --card: #0d0d0d; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #fff; margin: 0; padding: 10px; text-align: right; line-height: 1.5; }
+        .container { max-width: 800px; margin: auto; }
+        .card { background: var(--card); border: 1px solid #222; border-radius: 15px; padding: 15px; margin-bottom: 15px; border-right: 5px solid var(--red); }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .stat-box { background: #1a1a1a; padding: 10px; border-radius: 10px; text-align: center; border: 1px solid #333; }
+        .stat-box h2 { margin: 5px 0; color: var(--gold); font-size: 1.2rem; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 10px; }
+        th, td { border: 1px solid #222; padding: 10px; text-align: center; }
+        th { background: #111; color: var(--gold); }
+        .btn-main { background: var(--red); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        .btn-sub { background: #222; color: #ccc; border: none; padding: 8px; border-radius: 5px; width: 100%; cursor: pointer; margin-top: 5px; }
+        input, select { width: 100%; padding: 10px; margin: 5px 0; background: #111; border: 1px solid #333; color: white; border-radius: 5px; box-sizing: border-box; }
         .hidden { display: none !important; }
-        .floating-btn { position: fixed; bottom: 20px; left: 20px; background: var(--red); color: white; padding: 15px 20px; border-radius: 50px; font-weight: bold; cursor: pointer; border: none; z-index: 1000; box-shadow: 0 0 20px var(--red); }
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; display: flex; align-items: center; justify-content: center; }
-        .modal-content { background: var(--card); border: 2px solid var(--red); width: 95%; max-width: 500px; padding: 20px; border-radius: 20px; max-height: 85vh; overflow-y: auto; }
-        table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 10px; background: #050505; }
-        th, td { border: 1px solid #222; padding: 8px; text-align: center; }
-        th { color: var(--gold); background: #111; }
-        .badge-new { color: var(--green); font-weight: bold; }
-        .badge-old { color: #888; }
+        .policy-text { background: rgba(255, 152, 0, 0.1); border: 1px dashed var(--gold); color: var(--gold); padding: 10px; border-radius: 8px; font-size: 12px; margin-bottom: 15px; }
+        .id-badge { font-family: monospace; background: #222; color: var(--gold); padding: 2px 5px; border-radius: 4px; }
+        
+        /* Modal Style */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 3000; display: flex; align-items: center; justify-content: center; }
+        .modal-content { background: #0a0a0a; border: 2px solid var(--red); width: 95%; max-width: 550px; padding: 25px; border-radius: 20px; max-height: 85vh; overflow-y: auto; position: relative; }
+        .close-btn { position: absolute; top: 10px; left: 10px; color: white; font-size: 24px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<button class="floating-btn" onclick="showTerms(true)">📜 شروط المسابقة</button>
+<button style="position:fixed; bottom:20px; left:20px; z-index:1000; background:var(--red); color:white; border:none; padding:15px 20px; border-radius:50px; font-weight:bold; box-shadow:0 0 20px var(--red); cursor:pointer;" onclick="showPolicy(true)">📜 شروط المسابقة</button>
 
-<div id="termsModal" class="modal hidden">
-    <div class="modal-content text-right" dir="rtl">
-        <h2 style="color:var(--red); text-align:center; margin-top:0;">🚀🔥 مسابقة الدعوة – Helmy Card</h2>
-        <div style="line-height: 1.6; font-size: 13px; color: #ddd;">
-            <p style="color:var(--gold); text-align:center;"><b>"ادعي صديقك واكسب إنت وهو 👑"</b></p>
-            <p><b>1. المكافآت:</b><br>
-            👤 الداعي: 10% بونص (فريق > 10) أو 5% (فريق < 10).<br>
-            👥 المدعو الجديد: 5% بونص على أول إيداع (1000ج فأكثر).</p>
-            <p><b>2. الشروط المالية:</b><br>
-            - أقل إيداع 1000 جنيه مصري.<br>
-            - البونص على أول إيداع فقط للمدعو.</p>
-            <p><b>3. المميزات المستمرة:</b><br>
-            - 1% إلى 2% عمولة مدى الحياة على الفريق.<br>
-            - اعتماد كـ وكيل رسمي وتوثيق الحساب للـ Top 1.</p>
-            <p style="color:red; border-top:1px solid #333; padding-top:10px;">⚠️ <b>تنبيه:</b> تعدد الحسابات = حظر الفريق بالكامل فوراً.</p>
+<div id="policyModal" class="modal hidden">
+    <div class="modal-content">
+        <span class="close-btn" onclick="showPolicy(false)">&times;</span>
+        <h2 style="color:var(--red); text-align:center;">🚀 مسابقة الدعوة – Helmy Card</h2>
+        <div style="font-size: 14px; line-height: 1.8; color: #eee; border-top: 1px solid #333; padding-top: 15px;">
+            <p style="color:var(--gold); font-weight:bold; text-align:center;">"ادعي صديقك واكسب إنت وهو 👑"</p>
+            
+            <b>🎁 أولاً: مكافآت الوكيل المدعو (الجديد):</b><br>
+            - يحصل الوكيل الجديد على <b>بونص فوري بنسبة 5%</b> يتم إضافته لرصيده عند تنفيذ أول عملية شحن (بحد أدنى 1000 جنيه).<br><br>
+            
+            <b>🎁 ثانياً: مكافآت الوكيل الداعي:</b><br>
+            - يحصل الداعي على بونص أسبوعي بنسبة <b>5%</b> من إجمالي شحن فريقه إذا كان عدد أعضاء فريقه أقل من 10 وكلاء.<br>
+            - يحصل الداعي على بونص أسبوعي بنسبة <b>10%</b> من إجمالي شحن فريقه فور وصول عدد أعضاء فريقه إلى <b>10 وكلاء شاحنين</b> أو أكثر.<br><br>
+            
+            <b>💰 ثالثاً: العمولات المستمرة:</b><br>
+            - عمولة ثابتة تتراوح من <b>1% إلى 2%</b> على كل عملية شحن يقوم بها أي عضو في فريقك مدى الحياة.<br>
+            - يتم توثيق حسابات الوكلاء النشطين واعتمادهم كوكلاء رسميين في المنصة.<br><br>
+            
+            <p style="color:red; font-weight:bold; border: 1px solid red; padding: 10px; border-radius: 5px; text-align: center;">
+                🚫 تنبيه هام: يمنع تماماً نظام تعدد الحسابات الشخصية أو التلاعب بالدعوات. في حال اكتشاف ذلك، سيتم حظر حساب الداعي وفريقه بالكامل نهائياً وحرمانهم من الأرباح.
+            </p>
         </div>
-        <button class="btn-main" onclick="showTerms(false)">موافق.. ابدأ الآن</button>
+        <button class="btn-main" style="margin-top:20px;" onclick="showPolicy(false)">فهمت الشروط</button>
     </div>
 </div>
 
 <div class="container">
-    <h1 style="text-align: center; color: var(--red); text-shadow: 0 0 15px var(--red); margin: 20px 0;">🦅 HELMY CARD</h1>
+    <h1 style="text-align:center; color:var(--red); margin: 20px 0;">🦅 HELMY CARD</h1>
 
-    <div id="auth-section" class="card">
+    <div id="auth-ui" class="card">
         <div style="display:flex; gap:10px; margin-bottom:15px">
-            <button id="btnL" class="btn-main" onclick="toggleAuth('login')">دخول</button>
-            <button id="btnR" class="btn-sub" onclick="toggleAuth('register')">تسجيل وكيل</button>
+            <button class="btn-main" onclick="setAuthMode('login')">دخول</button>
+            <button class="btn-sub" onclick="setAuthMode('register')">تسجيل وكيل جديد</button>
         </div>
         <input type="email" id="email" placeholder="البريد الإلكتروني">
         <input type="password" id="password" placeholder="كلمة المرور">
         <div id="reg-fields" class="hidden">
-            <input type="text" id="fullName" placeholder="الاسم الثلاثي">
-            <input type="text" id="customCode" placeholder="كود الدعوة الخاص بك">
-            <input type="text" id="invBy" placeholder="كود الداعي (إن وجد)">
-            <select id="userStatus">
+            <input type="text" id="name" placeholder="الاسم الكامل">
+            <input type="text" id="myCode" placeholder="كود الدعوة الخاص بك">
+            <input type="text" id="invBy" placeholder="كود الشخص الذي دعاك (اختياري)">
+            <select id="userType">
                 <option value="جديد">أنا وكيل جديد 🆕</option>
                 <option value="قديم">أنا وكيل قديم 🔙</option>
             </select>
         </div>
-        <button class="btn-main" id="authBtn" onclick="processAuth()">دخول</button>
+        <button class="btn-main" style="margin-top:10px" onclick="handleAuth()">دخول النظام</button>
     </div>
 
-    <div id="user-section" class="hidden">
-        <div class="card" style="border-color: var(--gold);">
-            <div class="vip-tag" id="vipLevel">VIP</div>
-            <h3>الوكيل: <span id="uName" style="color:var(--red)">...</span></h3>
-            <p style="font-size:12px; margin-top:-10px;">الحالة: <span id="uStatusDisplay"></span></p>
-            <div style="display:flex; justify-content:space-around; text-align:center;">
-                <div><h2 id="uBalance" style="color:var(--gold); margin:0;">0</h2><p>رصيدك</p></div>
-                <div><h2 id="uTeam" style="color:var(--gold); margin:0;">0</h2><p>فريقك</p></div>
+    <div id="user-ui" class="hidden">
+        <div class="card">
+            <h3>الوكيل: <span id="u-name-top" style="color:var(--red)"></span></h3>
+            
+            <div class="policy-text">
+                📢 <b>تنبيه النظام:</b> بونص الفريق الحالي لك هو 5%. سيتم ترقيتك لـ 10% تلقائياً عند وصول فريقك لـ 10 وكلاء شاحنين. البونص يُصرف أسبوعياً بعد مراجعة الإدارة.
             </div>
-            <div style="text-align:center; background:#111; padding:10px; border:1px dashed var(--gold); border-radius:8px;">
-                <small>كود دعوتك:</small><br><b id="uCode" style="font-size:20px; color:var(--gold)"></b>
+
+            <div class="stat-grid">
+                <div class="stat-box"><h2><span id="u-bal-base">0</span> ج</h2><small>رصيدك المشحون</small></div>
+                <div class="stat-box"><h2><span id="u-bal-bonus">0</span> ج</h2><small>إجمالي البونص</small></div>
+                <div class="stat-box"><h2><span id="u-team-count">0</span></h2><small>عدد فريقك</small></div>
+                <div class="stat-box"><h2><span id="u-code-top"></span></h2><small>كود دعوتك</small></div>
             </div>
         </div>
+
         <div class="card">
             <h3>💰 طلب شحن رصيد</h3>
-            <input type="number" id="depAmt" placeholder="المبلغ (1000 جنيه فأكثر)">
-            <button class="btn-main" onclick="sendReq()">إرسال الطلب لحلمي</button>
-            <div id="reqMsg" style="text-align:center; margin-top:10px"></div>
+            <input type="number" id="amt-input" placeholder="المبلغ (1000 جنيه فأكثر)">
+            <button class="btn-main" onclick="requestCharge()">إرسال طلب الشحن</button>
+            <div id="req-status" style="text-align:center; margin-top:10px; font-size:12px;"></div>
         </div>
+
         <div class="card">
-            <h3>🌳 شجرة وكلائك</h3>
-            <div id="tree"></div>
+            <h3>🌳 أعضاء الفريق والـ ID</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>الاسم</th>
+                        <th>ID الوكيل</th>
+                        <th>البونص منه</th>
+                    </tr>
+                </thead>
+                <tbody id="team-list"></tbody>
+            </table>
         </div>
         <button class="btn-sub" onclick="logout()">خروج</button>
     </div>
 
-    <div id="admin-section" class="hidden">
-        <div class="card" style="border-color: var(--green);">
-            <h2 style="color:var(--green); text-align:center">لوحة تحكم حلمي 👑</h2>
+    <div id="admin-ui" class="hidden">
+        <div class="card" style="border-right-color: var(--green);">
+            <h2 style="color:var(--green)">👑 طلبات الشحن - حلمي</h2>
             <table>
-                <thead><tr><th>الوكيل</th><th>المبلغ</th><th>بونص</th><th>تأكيد</th></tr></thead>
-                <tbody id="admRequests"></tbody>
+                <thead>
+                    <tr>
+                        <th>الوكيل</th>
+                        <th>المبلغ</th>
+                        <th>بونص (5%)</th>
+                        <th>تأكيد</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-reqs"></tbody>
             </table>
         </div>
+        
         <div class="card">
-            <h3>قائمة الوكلاء والـ ID</h3>
-            <div style="overflow-x: auto;">
+            <h3>إدارة جميع الوكلاء</h3>
+            <div style="overflow-x:auto;">
                 <table>
-                    <thead><tr><th>الاسم</th><th>الحالة</th><th>الرصيد</th><th>ID الوكيل</th><th>كوده</th><th>حذف</th></tr></thead>
-                    <tbody id="admUsers"></tbody>
+                    <thead>
+                        <tr>
+                            <th>الاسم</th>
+                            <th>الحالة</th>
+                            <th>الرصيد</th>
+                            <th>البونص</th>
+                            <th>ID الوكيل</th>
+                            <th>إجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-users"></tbody>
                 </table>
             </div>
         </div>
@@ -134,29 +174,25 @@
     const auth = firebase.auth();
     const ADMIN = "admin@helmy.com";
 
-    function showTerms(s) { document.getElementById('termsModal').classList.toggle('hidden', !s); }
-    function toggleAuth(m) {
-        window.mode = m;
-        const isR = m === 'register';
-        document.getElementById('reg-fields').classList.toggle('hidden', !isR);
-        document.getElementById('authBtn').innerText = isR ? 'تأكيد الحساب' : 'دخول';
-    }
+    function showPolicy(s) { document.getElementById('policyModal').classList.toggle('hidden', !s); }
+    function setAuthMode(m) { document.getElementById('reg-fields').classList.toggle('hidden', m === 'login'); }
 
-    async function processAuth() {
+    async function handleAuth() {
         const email = document.getElementById('email').value;
         const pass = document.getElementById('password').value;
-        if(window.mode !== 'register') {
-            auth.signInWithEmailAndPassword(email, pass).catch(e => alert("خطأ بالبيانات"));
+        const isReg = !document.getElementById('reg-fields').classList.contains('hidden');
+        if(!isReg) {
+            auth.signInWithEmailAndPassword(email, pass).catch(e => alert("بيانات خاطئة"));
         } else {
-            const name = document.getElementById('fullName').value;
-            const myCode = document.getElementById('customCode').value;
-            const status = document.getElementById('userStatus').value;
+            const name = document.getElementById('name').value;
+            const myCode = document.getElementById('myCode').value;
             const inv = document.getElementById('invBy').value;
+            const type = document.getElementById('userType').value;
             try {
                 const res = await auth.createUserWithEmailAndPassword(email, pass);
                 await db.collection("users").doc(res.user.uid).set({
-                    name, myCode, email, balance: 0, invitedBy: inv || "direct", uid: res.user.uid,
-                    isFirstDep: true, userType: status 
+                    uid: res.user.uid, name, myCode, invitedBy: inv || "direct",
+                    balance: 0, bonusBalance: 0, userType: type, isFirst: true, email: email
                 });
             } catch(e) { alert(e.message); }
         }
@@ -164,83 +200,82 @@
 
     auth.onAuthStateChanged(user => {
         if(user) {
-            document.getElementById('auth-section').classList.add('hidden');
+            document.getElementById('auth-ui').classList.add('hidden');
             if(user.email === ADMIN) {
-                document.getElementById('admin-section').classList.remove('hidden');
-                loadAdmin();
+                document.getElementById('admin-ui').classList.remove('hidden');
+                initAdmin();
             } else {
-                document.getElementById('user-section').classList.remove('hidden');
-                loadUser(user);
+                document.getElementById('user-ui').classList.remove('hidden');
+                initUser(user.uid);
             }
         }
     });
 
-    function loadUser(user) {
-        db.collection("users").doc(user.uid).onSnapshot(d => {
+    function initUser(uid) {
+        db.collection("users").doc(uid).onSnapshot(d => {
             const u = d.data();
-            if(u) {
-                document.getElementById('uName').innerText = u.name;
-                document.getElementById('uBalance').innerText = u.balance + " ج";
-                document.getElementById('uCode').innerText = u.myCode;
-                document.getElementById('uStatusDisplay').innerText = u.userType || "جديد";
-                document.getElementById('vipLevel').innerText = u.invitedBy === "direct" ? "VIP 7" : "VIP 5";
-                db.collection("users").where("invitedBy", "==", u.myCode).onSnapshot(s => {
-                    document.getElementById('uTeam').innerText = s.size;
-                    const tree = document.getElementById('tree');
-                    tree.innerHTML = s.empty ? "لا يوجد وكلاء" : "";
-                    s.forEach(m => tree.innerHTML += `<div style="background:#111; padding:8px; margin-top:5px; border-radius:5px; border-right:3px solid var(--red);">👤 ${m.data().name}</div>`);
+            document.getElementById('u-name-top').innerText = u.name;
+            document.getElementById('u-bal-base').innerText = u.balance;
+            document.getElementById('u-bal-bonus').innerText = u.bonusBalance;
+            document.getElementById('u-code-top').innerText = u.myCode;
+            
+            db.collection("users").where("invitedBy", "==", u.myCode).onSnapshot(s => {
+                document.getElementById('u-team-count').innerText = s.size;
+                const list = document.getElementById('team-list');
+                list.innerHTML = "";
+                s.forEach(mDoc => {
+                    const m = mDoc.data();
+                    list.innerHTML += `<tr><td>${m.name}</td><td><span class="id-badge">#${m.uid.substring(0,6)}</span></td><td id="b-${m.uid}">0 ج</td></tr>`;
+                    db.collection("requests").where("uid", "==", m.uid).where("status", "==", "done").limit(1).get().then(rs => {
+                        if(!rs.empty) document.getElementById(`b-${m.uid}`).innerText = (rs.docs[0].data().amount * 0.05) + " ج";
+                    });
                 });
-            }
-        });
-        db.collection("requests").where("uid", "==", user.uid).orderBy("createdAt", "desc").limit(1).onSnapshot(s => {
-            const msg = document.getElementById('reqMsg');
-            if(!s.empty) {
-                const r = s.docs[0].data();
-                msg.innerHTML = r.status === "تم" ? `<span style="color:var(--green)">✅ تم تفعيل الرصيد</span>` : `<span style="color:#888">⏳ بانتظار حلمي..</span>`;
-            }
+            });
         });
     }
 
-    async function sendReq() {
-        const amt = Number(document.getElementById('depAmt').value);
-        if(amt < 1000) return alert("أقل إيداع 1000ج");
+    async function requestCharge() {
+        const amt = Number(document.getElementById('amt-input').value);
+        if(amt < 1000) return alert("الحد الأدنى 1000ج");
         const u = (await db.collection("users").doc(auth.currentUser.uid).get()).data();
-        // بونص 5% ينزل فقط للوكيل "الجديد" وفي أول شحنة فقط
-        const bonus = (u.userType === "جديد" && u.isFirstDep) ? (amt * 0.05) : 0;
-        await db.collection("requests").add({ 
-            uid: auth.currentUser.uid, name: u.name, amount: amt, bonus: bonus, status: "معلق", createdAt: new Date() 
+        const bonus = (u.userType === 'جديد' && u.isFirst) ? (amt * 0.05) : 0;
+        await db.collection("requests").add({
+            uid: u.uid, name: u.name, amount: amt, bonus: bonus, status: 'pending', at: new Date(), invBy: u.invitedBy
         });
-        alert("تم إرسال الإشعار!");
+        alert("تم إرسال الطلب!");
     }
 
-    function loadAdmin() {
-        db.collection("requests").where("status", "==", "معلق").onSnapshot(s => {
-            const list = document.getElementById('admRequests');
+    function initAdmin() {
+        db.collection("requests").where("status", "==", "pending").onSnapshot(s => {
+            const list = document.getElementById('admin-reqs');
             list.innerHTML = "";
             s.forEach(doc => {
-                const d = doc.data();
-                list.innerHTML += `<tr><td>${d.name}</td><td>${d.amount}ج</td><td style="color:var(--gold)">+${d.bonus}ج</td><td><button onclick="approve('${doc.id}', '${d.uid}', ${d.amount}, ${d.bonus})" style="background:var(--green); border:none; padding:5px; border-radius:5px;">تأكيد</button></td></tr>`;
+                const r = doc.data();
+                list.innerHTML += `<tr><td>${r.name}</td><td>${r.amount}ج</td><td style="color:var(--gold)">+${r.bonus}ج</td><td><button onclick="approve('${doc.id}', '${r.uid}', ${r.amount}, ${r.bonus}, '${r.invBy}')" class="btn-main" style="padding:5px;">تأكيد</button></td></tr>`;
             });
         });
         db.collection("users").onSnapshot(s => {
-            const list = document.getElementById('admUsers');
+            const list = document.getElementById('admin-users');
             list.innerHTML = "";
             s.forEach(doc => {
                 const u = doc.data();
                 if(u.email !== ADMIN) {
-                    const st = u.userType === "جديد" ? "badge-new" : "badge-old";
-                    list.innerHTML += `<tr><td>${u.name}</td><td><span class="${st}">${u.userType || "جديد"}</span></td><td>${u.balance}ج</td><td style="font-size:8px;">${u.uid}</td><td>${u.myCode}</td><td><button onclick="delU('${doc.id}')" style="background:red; color:white; border:none; border-radius:3px;">X</button></td></tr>`;
+                    list.innerHTML += `<tr><td>${u.name}</td><td>${u.userType}</td><td>${u.balance}ج</td><td>${u.bonusBalance}ج</td><td><span class="id-badge">#${u.uid.substring(0,6)}</span></td><td><button onclick="delUser('${doc.id}')" style="background:red; color:white; border:none; padding:3px; border-radius:3px;">X</button></td></tr>`;
                 }
             });
         });
     }
 
-    async function approve(id, uid, amt, bonus) {
-        await db.collection("users").doc(uid).update({ balance: firebase.firestore.FieldValue.increment(amt + bonus), isFirstDep: false });
-        await db.collection("requests").doc(id).update({ status: "تم" });
+    async function approve(rid, uid, amt, bonus, invBy) {
+        await db.collection("users").doc(uid).update({ balance: firebase.firestore.FieldValue.increment(amt), bonusBalance: firebase.firestore.FieldValue.increment(bonus), isFirst: false });
+        if(invBy && invBy !== "direct") {
+            const invRef = await db.collection("users").where("myCode", "==", invBy).get();
+            if(!invRef.empty) await db.collection("users").doc(invRef.docs[0].id).update({ bonusBalance: firebase.firestore.FieldValue.increment(amt * 0.05) });
+        }
+        await db.collection("requests").doc(rid).update({ status: 'done' });
     }
 
-    async function delU(id) { if(confirm("حذف الوكيل؟")) await db.collection("users").doc(id).delete(); }
+    async function delUser(id) { if(confirm("حذف الوكيل؟")) await db.collection("users").doc(id).delete(); }
     function logout() { auth.signOut(); location.reload(); }
 </script>
 </body>
